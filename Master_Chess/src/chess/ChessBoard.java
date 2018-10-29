@@ -12,7 +12,7 @@ public class ChessBoard extends GridPane {
 
 	public ChessBoard(boolean playerIsWhite) {   
 		// cause always call super
-		super();
+		super(); 
 
 		// initialize 8x8 array of spaces
 		for (int x = 0; x < spaces[0].length; x++) {
