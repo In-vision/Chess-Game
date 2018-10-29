@@ -11,7 +11,7 @@ public class Queen extends Piece {
 				MoveList.DOWN_LEFT, MoveList.LEFT, MoveList.UP_LEFT };
 		return m;
 	}
-
+ 
 	protected boolean usesSingleMove() {
 		return false;
 	}

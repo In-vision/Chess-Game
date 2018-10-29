@@ -15,7 +15,7 @@ public class King extends Piece {
 	protected boolean usesSingleMove() {
 		return true;
 	}
-
+ 
 	protected String getName() {
 		return "king";
 	}

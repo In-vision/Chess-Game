@@ -20,7 +20,7 @@ public enum MoveList {
 	public int getX() {
 		return this.x;
 	}
-
+ 
 	private void setY(int y) {
 		this.y = y;
 	}

@@ -7,7 +7,7 @@ public class Pawn extends Piece {
 		// this calls the constructor of Piece
 		super(color);
 	}
-
+ 
 	protected MoveList[] getPieceMoves() {
 		/*
 		 * Pawn movement is HIGHLY conditional, so this branches. The list ensures

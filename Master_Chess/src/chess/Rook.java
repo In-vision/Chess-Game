@@ -14,7 +14,7 @@ public class Rook extends Piece {
 	protected boolean usesSingleMove() {
 		return false;
 	}
-
+ 
 	protected String getName() {
 		return "rook";
 	}

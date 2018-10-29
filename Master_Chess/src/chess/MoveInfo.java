@@ -21,7 +21,7 @@ public class MoveInfo implements Serializable {
 		this.newX = newX;
 		this.newY = newY;
 	}
-
+ 
 	public String toString() {
 		return (getCharLabel(oldX + 1) + (oldY + 1) + " to " + getCharLabel(newX + 1) + (newY + 1));
 	}

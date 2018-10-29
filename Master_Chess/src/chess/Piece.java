@@ -8,7 +8,7 @@ public abstract class Piece {
 	protected boolean color;
 
 	// validMoves
-
+ 
 	public Piece(boolean color) {
 		this.color = color;
 

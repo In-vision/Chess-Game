@@ -18,7 +18,7 @@ public class Bishop extends Piece
                 MoveList.UP_LEFT
             };
         return m;
-    }
+    } 
 
     protected boolean usesSingleMove(){return false;}
     protected String getName(){return "bishop";}

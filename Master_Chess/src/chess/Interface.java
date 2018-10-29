@@ -37,7 +37,7 @@ public class Interface extends Application {
 	private ChessBoard board;
 	private boolean playerIsWhite = true; // white player = server
 	private boolean offlineMode = true;
-
+ 
 	@Override
 	public void start(Stage mainStage) throws IOException {
 		mainStage.setTitle("Chess Game");

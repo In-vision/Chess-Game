@@ -20,7 +20,7 @@ public class Space extends Button {
 		else
 			this.getStyleClass().add("chess-space-dark");
 	}
-
+ 
 	// returns true if space is occupied
 	public boolean isOccupied() {
 		return (this.piece != null);
