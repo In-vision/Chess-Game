@@ -42,7 +42,7 @@ public class Interface extends Application {
 	public void start(Stage mainStage) throws IOException {
 		mainStage.setTitle("Chess Game");
 		
-		mainStage.getIcons().add(new Image(getClass().getResourceAsStream("/res/app_icon.png")));
+		mainStage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/app_icon.png")));
 
 		BorderPane root = new BorderPane();
 		Scene mainScene = new Scene(root);
@@ -76,7 +76,7 @@ public class Interface extends Application {
 
 		// set window icon
 		Stage alertStage = (Stage) infoAlert.getDialogPane().getScene().getWindow();
-		alertStage.getIcons().add(new Image(getClass().getResourceAsStream("res/about.png")));
+		alertStage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/about.png")));
 
 		// the graphic replaces the standard icon on the left
 		// infoAlert.setGraphic( new ImageView( new Image("assets/icons/cat.png", 64,
