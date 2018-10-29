@@ -1,0 +1,28 @@
+.chess-space {
+	/* stage size (400)/8 spaces */
+	-fx-min-height:  50px;
+	-fx-min-width:   50px;
+	-fx-pref-height: 50px;
+	-fx-pref-width:  50px;
+	-fx-max-height:  50px;
+	-fx-max-width:   50px;
+	
+	/* prevent rounded buttons */
+	-fx-background-radius: 0em;
+}
+
+.chess-space-light {
+	-fx-background-color: #FFCE9E;
+}
+
+.chess-space-dark {
+	-fx-background-color: #D18B47;
+}
+
+.chess-space-active {
+	-fx-background-color: red;
+}
+
+.button:disabled{
+	-fx-opacity:2.0;
+}
