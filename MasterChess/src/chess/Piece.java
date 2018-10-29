@@ -15,7 +15,7 @@ public abstract class Piece {
 		// for pawn double move and castling(?)
 		hasMoved = false;
 
-		String location = "res/";
+		String location = "pieces/";
 		String filename = this.getColor() + "_" + this.getName() + ".png";
 		this.image = new Image(location + filename);
 		
