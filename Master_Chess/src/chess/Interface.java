@@ -64,7 +64,7 @@ public class Interface extends Application {
 
 	// Quits program
 	public void onQuit() {
-		Platform.exit();
+		Platform.exit(); 
 		System.exit(0);
 	}
 
