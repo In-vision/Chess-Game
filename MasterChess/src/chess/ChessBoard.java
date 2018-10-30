@@ -247,7 +247,7 @@ public class ChessBoard extends GridPane {
 		if (!matchesPieceMoves) {
 			return false;
 		}
-
+		//tqlo
 		return true;
 	}
 
