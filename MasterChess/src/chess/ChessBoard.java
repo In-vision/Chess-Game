@@ -5,7 +5,7 @@ import javafx.scene.layout.GridPane;
 public class ChessBoard extends GridPane {
 	public Space[][] spaces = new Space[8][8];
 	// const
-
+	//Commit 2 Isaac
 	// last clicked space
 	public Space activeSpace = null;
 	public static boolean playerTurn = true;
