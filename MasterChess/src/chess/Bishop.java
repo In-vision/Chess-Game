@@ -4,6 +4,8 @@ public class Bishop extends Piece
 {
     public Bishop(boolean color)
     {
+    	//First commit Isaac 
+    	
         //this calls the constructor of Piece
         super(color);
     }
