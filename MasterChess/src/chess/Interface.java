@@ -76,13 +76,13 @@ public class Interface extends Application {
 
 		// set window icon
 		Stage alertStage = (Stage) infoAlert.getDialogPane().getScene().getWindow();
-		alertStage.getIcons().add(new Image(getClass().getResourceAsStream("icons/about.png")));
+		alertStage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/about.png")));
 
 		// the graphic replaces the standard icon on the left
 		// infoAlert.setGraphic( new ImageView( new Image("assets/icons/cat.png", 64,
 		// 64, true, true) ) );
 
-		infoAlert.setContentText("Programmed by Maxwell Sirotin and Steven Vascellaro.\n\n"
+		infoAlert.setContentText("Programmed by Isaac LA CARGA and IAN EL DIOS.\n"
 				+ "Chess icons by \"Colin M.L. Burnett\".\n\n"
 				+ "Networking package & chat client based on \n\"JavaFX Software: Chat (Server-Client)\" \nby Almas Baimagambetov.\n\n"
 				+ "App icon by BlackVariant.");

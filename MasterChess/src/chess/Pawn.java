@@ -3,6 +3,7 @@ package chess;
 import java.util.ArrayList;
 
 public class Pawn extends Piece {
+	
 	public Pawn(boolean color) {
 		// this calls the constructor of Piece
 		super(color);
