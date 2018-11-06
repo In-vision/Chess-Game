@@ -8,24 +8,24 @@ public class ChessBoard extends GridPane {
 	//Commit 2 Isaac
 	// last clicked space
 	public Space activeSpace = null;
-	public static boolean playerTurn = true;
+	public static boolean playerTurn = true; //True para blancas. False para negras
 
 	public ChessBoard(boolean playerIsWhite) {   
 		// cause always call super
 		super();  
 
 		// initialize 8x8 array of spaces
-		for (int x = 0; x < spaces[0].length; x++) {
-			for (int y = 0; y < spaces[1].length; y++) {
+		for (int x = 0; x < 8; x++) {
+			for (int y = 0; y < 8; y++) {
 				boolean light = ((x + y) % 2 != 0); // checkerboard space colors
-				spaces[x][y] = new Space(light, x, y);
+				this.spaces[x][y] = new Space(light, x, y);
 
 				// if white, add Spaces so ensured bottom left is 0,0
 				// if Black, add Spaces so ensured bottom left is 7,7
 				if (playerIsWhite) {
-					this.add(spaces[x][y], x, 7 - y);
+					this.add(this.spaces[x][y], x, 7 - y);
 				} else {
-					this.add(spaces[x][y], 7 - x, y);
+					this.add(this.spaces[x][y], 7 - x, y);
 				}
 
 				// Gets values into event handler
@@ -33,10 +33,9 @@ public class ChessBoard extends GridPane {
 				final int yVal = y;
 				// runs things that happen when a space is clicked
 
-				spaces[x][y].setOnAction(e -> onSpaceClick(xVal, yVal));
+				this.spaces[x][y].setOnAction(e -> onSpaceClick(xVal, yVal));
 			}
 		}
-
 		// put pieces in start positions
 		this.defineStartPositions();
 	}
@@ -44,19 +43,20 @@ public class ChessBoard extends GridPane {
 	// Use this to get a space, using GridPane methods will (I think) cause color
 	// problems
 	public Space getSpace(int x, int y) {
-		return spaces[x][y];
+		return this.spaces[x][y];
 	}
 
 	public void setActiveSpace(Space s) {
 		// Remove style from old active space
-		if (this.activeSpace != null)
+		if (this.activeSpace != null) {
 			this.activeSpace.getStyleClass().removeAll("chess-space-active");
-
+		}
 		this.activeSpace = s;
 
 		// Add style to new active space
-		if (this.activeSpace != null)
+		if (this.activeSpace != null) {
 			this.activeSpace.getStyleClass().add("chess-space-active");
+		}
 	}
 
 	// Use this to get a space, using GridPane methods will (I think) cause color
@@ -111,18 +111,28 @@ public class ChessBoard extends GridPane {
 	public void onSpaceClick(int x, int y) {
 		Space clickedSpace = spaces[x][y];
 		// if piece is selected && user didn't click on allied piece
-		if (activeSpace != null && activeSpace.getPiece() != null
-				&& clickedSpace.getPieceColor() != activeSpace.getPieceColor()) {
+		if (this.activeSpace != null && this.activeSpace.getPiece() != null
+				&& clickedSpace.getPieceColor() != this.activeSpace.getPieceColor()) {
 			MoveInfo p;
-			p = new MoveInfo(activeSpace.getX(), activeSpace.getY(), x, y);
+			p = new MoveInfo(this.activeSpace.getX(), this.activeSpace.getY(), x, y);
 			processMove(p);
 			// decouples space from space on board
 			this.setActiveSpace(null);
 		} else {
 			// if there's a piece on the selected square when no active square
 			if (spaces[x][y].getPiece() != null) {
+				if(ChessBoard.playerTurn) {
+					if(spaces[x][y].getPiece().getColor() == "white") {
+						this.setActiveSpace(spaces[x][y]);
+					}
+				}
+				else {
+					if(spaces[x][y].getPiece().getColor() == "black") {
+						this.setActiveSpace(spaces[x][y]);
+					}
+				}
 				// make active square clicked square
-				this.setActiveSpace(spaces[x][y]);
+//				this.setActiveSpace(spaces[x][y]);
 //				disablePieces(playerTurn);
 //				playerTurn = !playerTurn;
 			}
@@ -133,6 +143,7 @@ public class ChessBoard extends GridPane {
 	// Process a move after it has been made by a player
 	protected boolean processMove(MoveInfo p) {
 		if (moveIsValid(p)) {
+			ChessBoard.playerTurn = !ChessBoard.playerTurn;
 			Space oldSpace = spaces[p.getOldX()][p.getOldY()];
 			Space newSpace = spaces[p.getNewX()][p.getNewY()];
 			newSpace.setPiece(oldSpace.releasePiece());
@@ -193,7 +204,7 @@ public class ChessBoard extends GridPane {
 		int stretchedMoveY;
 
 		// labels this loop to break out later
-		MoveLoop: for (MoveList m : moves) {// iterates through multiple times if has multiple possible moves
+		MoveLoop: for (MoveList m : moves){// iterates through multiple times if has multiple possible moves
 			multiMoveCount = 1;
 			if (piece.usesSingleMove() == false) {
 				multiMoveCount = 8;
@@ -210,7 +221,6 @@ public class ChessBoard extends GridPane {
 				// stretches a base move out to see if it matches the move made
 				stretchedMoveX = m.getX() * c;
 				stretchedMoveY = m.getY() * c;
-
 				Space tempSpace;
 
 				// If OOB, go to next move of the piece -- ensures space exists later
@@ -219,7 +229,6 @@ public class ChessBoard extends GridPane {
 				} catch (Exception e) {
 					break;
 				}
-
 				// handles piece collision and capturing
 				if (tempSpace.isOccupied()) {
 					hasCollided = true;
@@ -229,12 +238,13 @@ public class ChessBoard extends GridPane {
 						break;
 					}
 				}
-
 				// if stretched move matches made move
 				if (p.getGapX() == stretchedMoveX && p.getGapY() == stretchedMoveY) {
 					matchesPieceMoves = true;
-
-					if (pawnValidityCheck(p) == false) {
+					if(castleCheck(p, m) == false) {
+						return false;
+					}
+					if (pawnValidityCheck(p, m) == false) {
 						return false;
 					}
 
@@ -251,7 +261,43 @@ public class ChessBoard extends GridPane {
 		return true;
 	}
 
-	protected boolean pawnValidityCheck(MoveInfo p) {
+	/************** LÓGICA PARA ENROCARSE **************************/
+	/************** aun faltan ciertas validaciones ****************/
+	private boolean castleCheck(MoveInfo p, MoveList m){
+		String pieceName = this.activeSpace.getPiece().getName();
+		if(pieceName.equals("king")) {
+			if(m.isEqual(MoveList.KING_CASTLE_KINGSIDE)) {
+				Space KingRookSpace = spaces[7][p.getOldY()];
+				if(!KingRookSpace.isOccupied() || spaces[5][p.getOldY()].isOccupied()){
+					return false;
+				}
+				else if(KingRookSpace.getPiece().getName().equals("rook")) {
+					Space newKingRookSpace = spaces[5][p.getOldY()];
+					newKingRookSpace.setPiece(KingRookSpace.releasePiece());
+					return true;
+				}
+			}
+			else if(m.isEqual(MoveList.KING_CASTLE_QUEENSIDE)){
+				Space QueenRookSpace = spaces[0][p.getOldY()];
+				if(!QueenRookSpace.isOccupied() || spaces[1][p.getOldY()].isOccupied() || 
+						spaces[3][p.getOldY()].isOccupied()) {
+					return false;
+				}
+				else if(QueenRookSpace.getPiece().getName().equals("rook")){
+					Space newQueenRookSpace = spaces[3][p.getOldY()];
+					newQueenRookSpace.setPiece(QueenRookSpace.releasePiece());
+					return true;
+				}
+			}
+			else{
+				return true;
+			}
+		}
+		
+		return true;
+	}
+	
+	protected boolean pawnValidityCheck(MoveInfo p, MoveList m) {
 		// this should only be called in moveIsValid, so checks are done there
 		Space oldSpace = spaces[p.getOldX()][p.getOldY()];
 		Space newSpace = spaces[p.getNewX()][p.getNewY()];
@@ -275,6 +321,40 @@ public class ChessBoard extends GridPane {
 			}
 		} else // if it's a diagonal move
 		{
+			/************* COMER AL PASO CON EL PEON ****************************/
+			Space enemyPawn;
+			if(piece.getColor() == "white") {
+				if(p.getOldY() == 4 && m == MoveList.UP_RIGHT && (p.getOldX() + 1) < 8){
+					enemyPawn = spaces[p.getOldX() + 1][p.getOldY()];
+					if(enemyPawn.getPiece() != null && enemyPawn.getPiece().getName() == "pawn") {
+						enemyPawn.releasePiece();
+						return true;
+					}
+				}
+				else if(p.getOldY() == 4 && m == MoveList.UP_LEFT && (p.getOldX() - 1) >= 0) {
+					enemyPawn = spaces[p.getOldX() - 1][p.getOldY()];
+					if(enemyPawn.getPiece() != null && enemyPawn.getPiece().getName() == "pawn") {
+						enemyPawn.releasePiece();
+						return true;
+					}
+				}
+				
+			} else if(piece.getColor() == "black") {
+				if(p.getOldY() == 3 && m == MoveList.DOWN_RIGHT && (p.getOldX() + 1) < 8){
+					enemyPawn = spaces[p.getOldX() + 1][p.getOldY()];
+					if(enemyPawn.getPiece() != null && enemyPawn.getPiece().getName() == "pawn") {
+						enemyPawn.releasePiece();
+						return true;
+					}
+				}
+				else if(p.getOldY() == 3 && m == MoveList.DOWN_LEFT && (p.getOldX() - 1) >= 0) {
+					enemyPawn = spaces[p.getOldX() - 1][p.getOldY()];
+					if(enemyPawn.getPiece() != null && enemyPawn.getPiece().getName() == "pawn") {
+						enemyPawn.releasePiece();
+						return true;
+					}
+				}
+			}
 			// if the target square doesn't have an opposing piece, don't allow move
 			if ((!newSpace.isOccupied()) || piece.getColor() == newSpace.getPiece().getColor()) {
 				return false;
