@@ -1,6 +1,9 @@
 package chess;
 
 import javafx.scene.layout.GridPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 public class ChessBoard extends GridPane {
 	public Space[][] spaces = new Space[8][8];
@@ -9,11 +12,24 @@ public class ChessBoard extends GridPane {
 	// last clicked space
 	public Space activeSpace = null;
 	public static boolean playerTurn = true; //True para blancas. False para negras
-
+	
+	public Space previousWhiteMove = null;
+	public Space previousBlackMove = null;
+	public MoveList prevWhiteMoveList = null;
+	public MoveList prevBlackMoveList = null;
+	
+	public boolean hasPromoted;
+	
+	public boolean kingInCheck = false;
+	/** Sound effects **/
+	Media media = new Media(getClass().getResource("/soundEffects/chessMove.mp3").toExternalForm());
+	Media enroqueMedia = new Media(getClass().getResource("/soundEffects/enroque.mp3").toExternalForm());
+	MediaPlayer player = new MediaPlayer(media);
+	
 	public ChessBoard(boolean playerIsWhite) {   
 		// cause always call super
 		super();  
-
+		hasPromoted = false;
 		// initialize 8x8 array of spaces
 		for (int x = 0; x < 8; x++) {
 			for (int y = 0; y < 8; y++) {
@@ -139,14 +155,46 @@ public class ChessBoard extends GridPane {
 		}
 
 	}
-
+	
 	// Process a move after it has been made by a player
 	protected boolean processMove(MoveInfo p) {
 		if (moveIsValid(p)) {
-			ChessBoard.playerTurn = !ChessBoard.playerTurn;
 			Space oldSpace = spaces[p.getOldX()][p.getOldY()];
 			Space newSpace = spaces[p.getNewX()][p.getNewY()];
-			newSpace.setPiece(oldSpace.releasePiece());
+			previousWhiteMove = (ChessBoard.playerTurn) ? newSpace: previousWhiteMove;
+			previousBlackMove = (!ChessBoard.playerTurn)? newSpace: previousBlackMove;
+			if(this.hasPromoted && ChessBoard.playerTurn) {
+				oldSpace.releasePiece();
+				newSpace.setPiece(new Queen(true));
+				this.hasPromoted = false;
+			}
+			else if(this.hasPromoted && !ChessBoard.playerTurn) {
+				oldSpace.releasePiece();
+				newSpace.setPiece(new Queen(false));
+				this.hasPromoted = false;
+			}
+			else {
+				newSpace.setPiece(oldSpace.releasePiece());
+			}
+//			player.play();
+//			player = new MediaPlayer(media);
+			if(ChessBoard.playerTurn && (prevWhiteMoveList == MoveList.KING_CASTLE_KINGSIDE ||
+					prevWhiteMoveList == MoveList.KING_CASTLE_QUEENSIDE)) {
+				player = new MediaPlayer(enroqueMedia);
+				player.play();
+			}
+			else if (!ChessBoard.playerTurn && (prevBlackMoveList == MoveList.KING_CASTLE_KINGSIDE ||
+					prevBlackMoveList == MoveList.KING_CASTLE_QUEENSIDE)) {
+				player = new MediaPlayer(enroqueMedia);
+				player.play();		
+			}
+			else {
+				player = new MediaPlayer(media);
+				player.play();
+			}
+			
+//			prevWhiteMoveList == MoveList.KING_CASTLE_KINGSIDE
+			ChessBoard.playerTurn = !ChessBoard.playerTurn;
 			return true;
 		} else // invalid move
 		{
@@ -238,6 +286,8 @@ public class ChessBoard extends GridPane {
 						break;
 					}
 				}
+				prevWhiteMoveList = (ChessBoard.playerTurn) ? m: prevWhiteMoveList;
+				prevBlackMoveList = (!ChessBoard.playerTurn)? m: prevBlackMoveList;
 				// if stretched move matches made move
 				if (p.getGapX() == stretchedMoveX && p.getGapY() == stretchedMoveY) {
 					matchesPieceMoves = true;
@@ -253,6 +303,7 @@ public class ChessBoard extends GridPane {
 					break MoveLoop;
 				}
 			}
+			
 		}
 		if (!matchesPieceMoves) {
 			return false;
@@ -308,6 +359,9 @@ public class ChessBoard extends GridPane {
 			return true;
 		}
 
+		/****************** PROMOTION *****************************/
+		this.hasPromoted = ((ChessBoard.playerTurn && p.getNewY() == 7) ||
+							(!ChessBoard.playerTurn && p.getNewY() == 0))? true : false;
 		// if this is a "straight" move
 		if (p.getGapX() == 0) {
 			// black is negative 1, white is positive 1, for direction later
@@ -319,21 +373,31 @@ public class ChessBoard extends GridPane {
 					return false;
 				}
 			}
+
 		} else // if it's a diagonal move
 		{
 			/************* COMER AL PASO CON EL PEON ****************************/
 			Space enemyPawn;
 			if(piece.getColor() == "white") {
+				
 				if(p.getOldY() == 4 && m == MoveList.UP_RIGHT && (p.getOldX() + 1) < 8){
 					enemyPawn = spaces[p.getOldX() + 1][p.getOldY()];
-					if(enemyPawn.getPiece() != null && enemyPawn.getPiece().getName() == "pawn") {
+					if(enemyPawn.getPiece() != null && enemyPawn.getPiece().getName() == "pawn"
+							&& enemyPawn.getX() == previousBlackMove.getX() 
+							&& enemyPawn.getY() == previousBlackMove.getY()
+							&& !newSpace.isOccupied()
+							&& prevBlackMoveList == MoveList.DOUBLE_DOWN) {
 						enemyPawn.releasePiece();
 						return true;
 					}
 				}
 				else if(p.getOldY() == 4 && m == MoveList.UP_LEFT && (p.getOldX() - 1) >= 0) {
 					enemyPawn = spaces[p.getOldX() - 1][p.getOldY()];
-					if(enemyPawn.getPiece() != null && enemyPawn.getPiece().getName() == "pawn") {
+					if(enemyPawn.getPiece() != null && enemyPawn.getPiece().getName() == "pawn"
+							&& enemyPawn.getX() == previousBlackMove.getX() 
+							&& enemyPawn.getY() == previousBlackMove.getY()
+							&& !newSpace.isOccupied()
+							&& prevBlackMoveList == MoveList.DOUBLE_DOWN) {
 						enemyPawn.releasePiece();
 						return true;
 					}
@@ -342,14 +406,22 @@ public class ChessBoard extends GridPane {
 			} else if(piece.getColor() == "black") {
 				if(p.getOldY() == 3 && m == MoveList.DOWN_RIGHT && (p.getOldX() + 1) < 8){
 					enemyPawn = spaces[p.getOldX() + 1][p.getOldY()];
-					if(enemyPawn.getPiece() != null && enemyPawn.getPiece().getName() == "pawn") {
+					if(enemyPawn.getPiece() != null && enemyPawn.getPiece().getName() == "pawn"
+							&& enemyPawn.getX() == previousWhiteMove.getX() 
+							&& enemyPawn.getY() == previousWhiteMove.getY()
+							&& !newSpace.isOccupied()
+							&& prevWhiteMoveList == MoveList.DOUBLE_UP) {
 						enemyPawn.releasePiece();
 						return true;
 					}
 				}
 				else if(p.getOldY() == 3 && m == MoveList.DOWN_LEFT && (p.getOldX() - 1) >= 0) {
 					enemyPawn = spaces[p.getOldX() - 1][p.getOldY()];
-					if(enemyPawn.getPiece() != null && enemyPawn.getPiece().getName() == "pawn") {
+					if(enemyPawn.getPiece() != null && enemyPawn.getPiece().getName() == "pawn"
+							&& enemyPawn.getX() == previousWhiteMove.getX() 
+							&& enemyPawn.getY() == previousWhiteMove.getY()
+							&& !newSpace.isOccupied()
+							&& prevWhiteMoveList == MoveList.DOUBLE_UP) {
 						enemyPawn.releasePiece();
 						return true;
 					}
