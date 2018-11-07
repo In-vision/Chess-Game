@@ -155,7 +155,6 @@ public class ChessBoard extends GridPane {
 		}
 
 	}
-
 	
 	// Process a move after it has been made by a player
 	protected boolean processMove(MoveInfo p) {
