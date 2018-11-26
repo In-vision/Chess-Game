@@ -82,7 +82,7 @@ public class Interface extends Application {
 		// infoAlert.setGraphic( new ImageView( new Image("assets/icons/cat.png", 64,
 		// 64, true, true) ) );
 
-		infoAlert.setContentText("Programmed by Isaac LA CARGA and IAN EL DIOS.\n"
+		infoAlert.setContentText("Programmed by\n"
 				+ "Chess icons by \"Colin M.L. Burnett\".\n\n"
 				+ "Networking package & chat client based on \n\"JavaFX Software: Chat (Server-Client)\" \nby Almas Baimagambetov.\n\n"
 				+ "App icon by BlackVariant.");

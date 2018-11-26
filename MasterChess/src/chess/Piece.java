@@ -9,7 +9,7 @@ public abstract class Piece {
 
 	// validMoves
  
-	public Piece(boolean color) {
+	public Piece(boolean color){
 		this.color = color;
 
 		// for pawn double move and castling(?)
