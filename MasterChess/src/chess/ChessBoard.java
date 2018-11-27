@@ -49,7 +49,7 @@ public class ChessBoard extends GridPane {
 				this.spaces[row][column] = new Space(isLightSquare, row, column);
 				this.spaces[row][column].prefHeightProperty().bind(this.heightProperty());
 				this.spaces[row][column].prefWidthProperty().bind(this.widthProperty());
-				this.spaces[row][column].autosize();
+//				this.spaces[row][column].autosize();
 
 				/*
 				 * Si es blancas, añade al gridPane de manera que la esquina izquierda sea 0,0
@@ -250,6 +250,8 @@ public class ChessBoard extends GridPane {
 				whitePieces.remove(oldSquare);
 				movedPiece = newSquare.getPiece();
 				this.pawnHasPromoted = false;
+				whitePieces.add(newSquare);
+				blackPieces.remove(newSquare);
 			}
 			else if(this.pawnHasPromoted && !ChessBoard.playerTurn) {
 				previousTakenPiece = newSquare.releasePiece();
@@ -257,6 +259,8 @@ public class ChessBoard extends GridPane {
 				blackPieces.remove(oldSquare);
 				movedPiece = newSquare.getPiece();
 				this.pawnHasPromoted = false;
+				blackPieces.add(newSquare);
+				whitePieces.remove(newSquare);
 			}
 			else {
 				previousTakenPiece = newSquare.releasePiece();
@@ -299,21 +303,21 @@ public class ChessBoard extends GridPane {
 			}
 			if(this.checkmate) System.out.println("Checkmated");
 			soundEffectHandler();
-			for(int i = 7; i >= 0; i--) {
-				for(int j = 0; j <= 7; j++) {
-					Space a = spaces[j][i];
-					System.out.print(a.toString() + ":" + a.getWhiteThreads() + " ");
-				}
-				System.out.println();
-			}
-			System.out.println();
-			for(int i = 7; i >= 0; i--) {
-				for(int j = 0; j <= 7; j++) {
-					Space a = spaces[j][i];
-					System.out.print(a.toString() + ":" +a.getBlackThreads() + " ");
-				}
-				System.out.println();
-			}
+//			for(int i = 7; i >= 0; i--) {
+//				for(int j = 0; j <= 7; j++) {
+//					Space a = spaces[j][i];
+//					System.out.print(a.toString() + ":" + a.getWhiteThreads() + " ");
+//				}
+//				System.out.println();
+//			}
+//			System.out.println();
+//			for(int i = 7; i >= 0; i--) {
+//				for(int j = 0; j <= 7; j++) {
+//					Space a = spaces[j][i];
+//					System.out.print(a.toString() + ":" +a.getBlackThreads() + " ");
+//				}
+//				System.out.println();
+//			}
 			return true;
 		} else { //Si no cumple nada mas, significa que no fue jugada valida
 			return false;

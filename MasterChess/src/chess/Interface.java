@@ -1,5 +1,6 @@
 package chess;
 
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 //import java.util.Optional;
 
@@ -8,16 +9,17 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Label;
 //import javafx.scene.control.ButtonType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
 //import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 //import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -33,7 +35,7 @@ public class Interface extends Application {
 			System.exit(0);
 		}
 	}
-
+	private String playerTurnStr;
 	private ChessBoard board;
 	private boolean playerIsWhite = true; // white player = server
 	private boolean offlineMode = true;
@@ -47,16 +49,21 @@ public class Interface extends Application {
 		BorderPane root = new BorderPane();
 		Scene mainScene = new Scene(root);
 		mainStage.setScene(mainScene);
-
+		
+	
+		Label playerTurn = new Label();
 		// add stylesheet
 		mainScene.getStylesheets().add("/res/stylesheet.css");
+		playerTurnStr = (ChessBoard.playerTurn)? "Blancas" : "Negras";
+		playerTurn.addEventHandler(javafx.scene.input.KeyEvent.ANY, (e) -> changePlayerStr());
+		playerTurn.setText(playerTurnStr);	
 
 		// draw chessboard
 		board = new ChessBoard(playerIsWhite);
 //		root.getChildren().add(board);
 		
 		root.setCenter(board); // sized 400x400
-		
+		root.setBottom(playerTurn);
 		board.prefWidthProperty().bind(root.widthProperty());
 		board.prefHeightProperty().bind(root.heightProperty());
 		// add menuBar
@@ -64,7 +71,14 @@ public class Interface extends Application {
 		root.setTop(menuBar);
 		mainStage.show();
 	}
-
+	
+	public void changePlayerStr(){
+		if(playerTurnStr.equals("Blancas")) {
+			playerTurnStr = "Negras";
+		}
+		playerTurnStr = "Blancas";
+	}
+	
 	// Quits program
 	public void onQuit() {
 		Platform.exit();
