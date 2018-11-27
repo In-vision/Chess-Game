@@ -7,14 +7,24 @@ public class Space extends Button {
 	private int x;
 	private int y;
 	private Piece piece; // piece currently on space
-
+	private boolean threatenedByWhite;
+	private boolean threatenedByBlack;
+	private int whiteThreads;
+	private int blackThreads;
+	
+	
+	public String toString() {
+		return "[" + x + "," + y + "]";
+	}
+	
 	public Space(boolean light, int x, int y) {
 		super();
 		this.x = x;
 		this.y = y;
 		this.piece = null;
+		whiteThreads = blackThreads = 0;
+		threatenedByBlack = threatenedByWhite = false;
 		this.getStyleClass().add("chess-space");
-
 		if (light)
 			this.getStyleClass().add("chess-space-light");
 		else
@@ -23,7 +33,7 @@ public class Space extends Button {
  
 	// returns true if space is occupied
 	public boolean isOccupied() {
-		return (this.piece != null);
+		return this.piece != null;
 	}
 
 	// removes piece from space
@@ -46,7 +56,7 @@ public class Space extends Button {
 		else
 			this.setGraphic(new ImageView());
 	}
-
+	
 	public String getPieceColor() {
 		if (getPiece() != null)
 			return getPiece().getColor();
@@ -54,19 +64,91 @@ public class Space extends Button {
 			return "";
 	}
 
-	public void setX(int xIn) {
-		this.x = xIn;
+	public void setX(int x) {
+		this.x = x;
 	}
 
 	public int getX() {
 		return this.x;
 	}
 
-	public void setY(int yIn) {
-		this.y = yIn;
+	public void setY(int y) {
+		this.y = y;
 	}
 
 	public int getY() {
 		return this.y;
+	}
+	
+	public boolean isThreatenedByWhite() {
+		return threatenedByWhite;
+	}
+
+
+	public boolean isThreatenedByBlack() {
+		return threatenedByBlack;
+	}
+
+	public boolean equals(Space b) {
+		if(this.x != b.x || this.y != b.y) return false;
+		return true;
+	}
+	
+	public int getWhiteThreads() {
+		return whiteThreads;
+	}
+
+	public int getBlackThreads() {
+		return blackThreads;
+	}
+	
+	public void incWhiteThreads() {
+		this.whiteThreads++;
+		if(this.whiteThreads > 0) this.threatenedByWhite = true;
+	}
+	
+	public void decWhiteThreads() {
+		if(this.whiteThreads == 0) return;
+		this.whiteThreads--;
+		if(this.whiteThreads == 0) this.threatenedByWhite = false;
+		
+	}
+	
+	public void incBlackThreads() {
+		this.blackThreads++;
+		if(this.blackThreads > 0) this.threatenedByBlack = true;
+	}
+	
+	public void decBlackThreads() {
+		if(this.blackThreads == 0) return;
+		this.blackThreads--;
+		if(this.blackThreads == 0) this.threatenedByBlack = false;
+	}
+	
+	public boolean threadHandlerAndChecker(boolean giveOrTake, boolean playerTurn) {
+		boolean check = false;
+		if(giveOrTake) {
+			if(playerTurn) {
+				incWhiteThreads();
+				if(isOccupied() && getPieceColor().equals("black") && getPiece().getName().equals("king")){
+					check = true;
+				}
+			}
+			else {
+				incBlackThreads();
+				if(isOccupied() && getPieceColor().equals("white") && getPiece().getName().equals("king")){
+					check = true;
+				}
+			}
+		}
+		else {
+			if(playerTurn) {
+				decWhiteThreads();
+			}
+			else {
+				decBlackThreads();
+			}
+		}
+		return check;
 	}
 }

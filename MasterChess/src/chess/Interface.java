@@ -53,12 +53,15 @@ public class Interface extends Application {
 
 		// draw chessboard
 		board = new ChessBoard(playerIsWhite);
+//		root.getChildren().add(board);
+		
 		root.setCenter(board); // sized 400x400
-
+		
+		board.prefWidthProperty().bind(root.widthProperty());
+		board.prefHeightProperty().bind(root.heightProperty());
 		// add menuBar
 		MenuBar menuBar = generateMenuBar();
 		root.setTop(menuBar);
-
 		mainStage.show();
 	}
 
@@ -82,7 +85,7 @@ public class Interface extends Application {
 		// infoAlert.setGraphic( new ImageView( new Image("assets/icons/cat.png", 64,
 		// 64, true, true) ) );
 
-		infoAlert.setContentText("Programmed by Isaac LA CARGA and IAN EL DIOS.\n"
+		infoAlert.setContentText("Programmed by\n"
 				+ "Chess icons by \"Colin M.L. Burnett\".\n\n"
 				+ "Networking package & chat client based on \n\"JavaFX Software: Chat (Server-Client)\" \nby Almas Baimagambetov.\n\n"
 				+ "App icon by BlackVariant.");
