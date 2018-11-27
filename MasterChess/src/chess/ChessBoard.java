@@ -49,6 +49,8 @@ public class ChessBoard extends GridPane {
 				this.spaces[row][column] = new Space(isLightSquare, row, column);
 				this.spaces[row][column].prefHeightProperty().bind(this.heightProperty());
 				this.spaces[row][column].prefWidthProperty().bind(this.widthProperty());
+//				this.spaces[row][column].autosize();
+
 				/*
 				 * Si es blancas, añade al gridPane de manera que la esquina izquierda sea 0,0
 				 * Si es negras,  añade al gridPane de manera que la esquina izquierda sea 7,7
@@ -243,14 +245,22 @@ public class ChessBoard extends GridPane {
 			Piece previousTakenPiece = null;
 			threadSwitch(movedPiece, oldSquare, false, false); //Quitar casillas que la pieza amenazaba
 			if(this.pawnHasPromoted && ChessBoard.playerTurn) {
+				previousTakenPiece = newSquare.releasePiece();
 				newSquare.setPiece(new Queen(true));
 				whitePieces.remove(oldSquare);
+				movedPiece = newSquare.getPiece();
 				this.pawnHasPromoted = false;
+				whitePieces.add(newSquare);
+				blackPieces.remove(newSquare);
 			}
 			else if(this.pawnHasPromoted && !ChessBoard.playerTurn) {
+				previousTakenPiece = newSquare.releasePiece();
 				newSquare.setPiece(new Queen(false));
 				blackPieces.remove(oldSquare);
+				movedPiece = newSquare.getPiece();
 				this.pawnHasPromoted = false;
+				blackPieces.add(newSquare);
+				whitePieces.remove(newSquare);
 			}
 			else {
 				previousTakenPiece = newSquare.releasePiece();
@@ -293,21 +303,21 @@ public class ChessBoard extends GridPane {
 			}
 			if(this.checkmate) System.out.println("Checkmated");
 			soundEffectHandler();
-			for(int i = 7; i >= 0; i--) {
-				for(int j = 0; j <= 7; j++) {
-					Space a = spaces[j][i];
-					System.out.print(a.toString() + ":" + a.getWhiteThreads() + " ");
-				}
-				System.out.println();
-			}
-			System.out.println();
-			for(int i = 7; i >= 0; i--) {
-				for(int j = 0; j <= 7; j++) {
-					Space a = spaces[j][i];
-					System.out.print(a.toString() + ":" +a.getBlackThreads() + " ");
-				}
-				System.out.println();
-			}
+//			for(int i = 7; i >= 0; i--) {
+//				for(int j = 0; j <= 7; j++) {
+//					Space a = spaces[j][i];
+//					System.out.print(a.toString() + ":" + a.getWhiteThreads() + " ");
+//				}
+//				System.out.println();
+//			}
+//			System.out.println();
+//			for(int i = 7; i >= 0; i--) {
+//				for(int j = 0; j <= 7; j++) {
+//					Space a = spaces[j][i];
+//					System.out.print(a.toString() + ":" +a.getBlackThreads() + " ");
+//				}
+//				System.out.println();
+//			}
 			return true;
 		} else { //Si no cumple nada mas, significa que no fue jugada valida
 			return false;
@@ -664,7 +674,6 @@ public class ChessBoard extends GridPane {
 	
 	
 	private void threadHandler(Space oldSquare, Space newSquare, Piece movedPiece, Piece prevTakenPiece) {
-		int tmp;
 		boolean check = false;
 		if(prevTakenPiece != null) threadSwitch(prevTakenPiece, newSquare, false, true);
 		/* Pone las nuevas casillas amenazadas, además de que checa si hay un jaque directo */
@@ -1276,34 +1285,27 @@ public class ChessBoard extends GridPane {
 	
 	private boolean bishopAttacksKing(Space king, Space tmp, MoveInfo p) {
 		int piecesBetweenKing = 0;
-		System.out.println(tmp);
 		if( (tmp.getY() - king.getY()) == (tmp.getX() - king.getX()) &&
-				(tmp.getY() - p.getOldY()) == (tmp.getX() - p.getOldX()) ) {
-				System.out.println("Analizing / ");
+				(king.getY() - p.getOldY()) == (king.getX() - p.getOldX()) ) {
 				int minY = (king.getY() > tmp.getY())? tmp.getY() + 1 : king.getY() + 1;
 				int maxY = (king.getY() > tmp.getY())? king.getY() : tmp.getY();
 				int minX = (king.getX() > tmp.getX())? tmp.getX() + 1 : king.getX() + 1;
 				int maxX = (king.getX() > tmp.getX())? king.getX() : tmp.getX();
 				for(; minX < maxX && minY < maxY; minX++, minY++) {
-					System.out.println("Space: " + spaces[minX][minY]);
-					if(spaces[minX][minY].isOccupied() && spaces[minX][minY].equals(spaces[p.getOldX()][p.getOldY()])) {
-						System.out.println("One more piece");
+					if(spaces[minX][minY].isOccupied()) {
 						piecesBetweenKing++;
 					}
 				}
 				
 				if(piecesBetweenKing == 1) return false;
 			}			else if(Math.abs(tmp.getY() - king.getY()) == Math.abs(tmp.getX() - king.getX()) &&
-					Math.abs(tmp.getY() - p.getOldY()) == Math.abs(tmp.getX() - p.getOldX())) {
-				System.out.println("Analizing \" ");
+					Math.abs(king.getY() - p.getOldY()) == Math.abs(king.getX() - p.getOldX())) {
 				int minY = (king.getY() > tmp.getY())? tmp.getY() + 1 : king.getY() + 1;
 				int maxY = (king.getY() > tmp.getY())? king.getY() : tmp.getY();
 				int minX = (king.getX() > tmp.getX())? king.getX() - 1 : tmp.getX() - 1;
 				int maxX = (king.getX() > tmp.getX())? tmp.getX() : king.getX();
 				for(; minX > maxX && minY < maxY; minX--, minY++) {
-					System.out.println("Space: " + spaces[minX][minY]);
-					if(spaces[minX][minY].isOccupied() && spaces[minX][minY].equals(spaces[p.getOldX()][p.getOldY()])) {
-						System.out.println("One more piece");
+					if(spaces[minX][minY].isOccupied()) {
 						piecesBetweenKing++;
 					}
 				}
