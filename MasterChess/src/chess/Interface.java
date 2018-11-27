@@ -53,12 +53,15 @@ public class Interface extends Application {
 
 		// draw chessboard
 		board = new ChessBoard(playerIsWhite);
+//		root.getChildren().add(board);
+		
 		root.setCenter(board); // sized 400x400
-
+		
+		board.prefWidthProperty().bind(root.widthProperty());
+		board.prefHeightProperty().bind(root.heightProperty());
 		// add menuBar
 		MenuBar menuBar = generateMenuBar();
 		root.setTop(menuBar);
-
 		mainStage.show();
 	}
 

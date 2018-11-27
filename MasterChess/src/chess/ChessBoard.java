@@ -47,6 +47,8 @@ public class ChessBoard extends GridPane {
 			for (int column = 0; column < 8; column++) {
 				boolean isLightSquare = ((row + column) % 2 != 0); //Controla colores de casillas
 				this.spaces[row][column] = new Space(isLightSquare, row, column);
+				this.spaces[row][column].prefHeightProperty().bind(this.heightProperty());
+				this.spaces[row][column].prefWidthProperty().bind(this.widthProperty());
 				/*
 				 * Si es blancas, añade al gridPane de manera que la esquina izquierda sea 0,0
 				 * Si es negras,  añade al gridPane de manera que la esquina izquierda sea 7,7
@@ -225,6 +227,7 @@ public class ChessBoard extends GridPane {
 	
 	// Process a move after it has been made by a player
 	protected boolean moveProcesser(MoveInfo p){
+		int hola;
 		if (moveIsValid(p, true) && !this.checkmate) {
 			this.kingInCheck = false;
 			this.discoveredCheck = false;
@@ -313,26 +316,6 @@ public class ChessBoard extends GridPane {
 	
 	private boolean horizontalVerticalDiscoveredCheck(Space tmp, Space oldSquare, Space newSquare, boolean pieceColor){
 		boolean check = false, pieceInTheMiddle = false;
-		if(pieceColor) { //Bug fixer de enroque
-			if(tmp.getPiece().getName() == "rook") {
-				if(prevWhiteMoveList == MoveList.KING_CASTLE_KINGSIDE && tmp.getX() == 5 && tmp.getY() == 0) {
-					return false;
-				}
-				if(prevWhiteMoveList == MoveList.KING_CASTLE_QUEENSIDE && tmp.getX() == 3 && tmp.getY() == 0) {
-					return false;
-				}
-			}
-		}
-		else {
-			if(tmp.getPiece().getName() == "rook") {
-				if(prevBlackMoveList == MoveList.KING_CASTLE_KINGSIDE && tmp.getX() == 5 && tmp.getY() == 7) {
-					return false;
-				}
-				if(prevBlackMoveList == MoveList.KING_CASTLE_QUEENSIDE && tmp.getX() == 3 && tmp.getY() == 7) {
-					return false;
-				}
-			}
-		}
 
 		if (oldSquare.getY() == tmp.getY()) {
 			if (oldSquare.getX() > tmp.getX()) {
@@ -351,6 +334,7 @@ public class ChessBoard extends GridPane {
 				}
 			}
 			if (!pieceInTheMiddle) {
+				
 				if (newSquare.getY() != oldSquare.getY()) {
 					if (oldSquare.getX() > tmp.getX()) {
 						if (oldSquare.getX() < 7) {
@@ -371,6 +355,26 @@ public class ChessBoard extends GridPane {
 					}
 
 				} else {
+					if(pieceColor){
+						if(tmp.getPiece().getName().equals("rook")) {
+							if(prevWhiteMoveList == MoveList.KING_CASTLE_KINGSIDE  && tmp.getX() == 5) {
+								return false;
+							}
+							if(prevWhiteMoveList == MoveList.KING_CASTLE_QUEENSIDE && tmp.getX() == 3) {
+								return false;
+							}
+						}
+					}
+					else {
+						if(tmp.getPiece().getName().equals("rook")) {
+							if(prevBlackMoveList == MoveList.KING_CASTLE_KINGSIDE  && tmp.getX() == 5) {
+								return false;
+							}
+							if(prevBlackMoveList == MoveList.KING_CASTLE_QUEENSIDE && tmp.getX() == 3) {
+								return false;
+							}
+						}
+					}
 					if (oldSquare.getX() > tmp.getX()) {
 						if (newSquare.getX() < oldSquare.getX()) {
 							for (int i = oldSquare.getX(); i > newSquare.getX(); i--) {
@@ -378,6 +382,7 @@ public class ChessBoard extends GridPane {
 							}
 						} else {
 							for (int i = oldSquare.getX() + 1; i <= newSquare.getX(); i++) {
+								if(this.castled && spaces[i][tmp.getY()].getPiece().getName().equals("king")) break;
 								spaces[i][tmp.getY()].threadHandlerAndChecker(true, pieceColor);
 							}
 						}
@@ -387,7 +392,8 @@ public class ChessBoard extends GridPane {
 								spaces[i][tmp.getY()].threadHandlerAndChecker(false, pieceColor);
 							}
 						} else {
-							for (int i = oldSquare.getX() - 1; i >= newSquare.getX(); i++) {
+							for (int i = oldSquare.getX() - 1; i >= newSquare.getX(); i--) {
+								if(this.castled && spaces[i][tmp.getY()].getPiece().getName().equals("king")) break;
 								spaces[i][tmp.getY()].threadHandlerAndChecker(true, pieceColor);
 							}
 						}
@@ -732,6 +738,7 @@ public class ChessBoard extends GridPane {
 	}
 	
 	private void blockingPathChecker(Space newSquare){
+		if(this.castled) return;
 		for(Space tmp : whitePieces) {
 			
 			if(!newSquare.equals(tmp)) {
@@ -1229,6 +1236,7 @@ public class ChessBoard extends GridPane {
 		for(Space tmp : enemyPieces) {
 			if(tmp.getPiece().getName().equals("rook")) {
 				kingSafe = rookAttacksKing(king, tmp, p);
+				System.out.println(tmp);
 				if(!kingSafe) return false;
 			}
 			else if(tmp.getPiece().getName().equals("bishop")){
@@ -1237,6 +1245,7 @@ public class ChessBoard extends GridPane {
 			}
 			else if(tmp.getPiece().getName().equals("queen")) {
 				kingSafe = rookAttacksKing(king, tmp, p) && bishopAttacksKing(king, tmp, p);
+				System.out.println(tmp);
 				if(!kingSafe) return false;
 			}
 		}
@@ -1267,25 +1276,35 @@ public class ChessBoard extends GridPane {
 	
 	private boolean bishopAttacksKing(Space king, Space tmp, MoveInfo p) {
 		int piecesBetweenKing = 0;
-		if( (king.getY() - tmp.getY()) == (king.getX() - tmp.getX()) &&
+		System.out.println(tmp);
+		if( (tmp.getY() - king.getY()) == (tmp.getX() - king.getX()) &&
 				(tmp.getY() - p.getOldY()) == (tmp.getX() - p.getOldX()) ) {
+				System.out.println("Analizing / ");
 				int minY = (king.getY() > tmp.getY())? tmp.getY() + 1 : king.getY() + 1;
 				int maxY = (king.getY() > tmp.getY())? king.getY() : tmp.getY();
 				int minX = (king.getX() > tmp.getX())? tmp.getX() + 1 : king.getX() + 1;
 				int maxX = (king.getX() > tmp.getX())? king.getX() : tmp.getX();
 				for(; minX < maxX && minY < maxY; minX++, minY++) {
-					if(spaces[minX][minY].isOccupied())piecesBetweenKing++;
+					System.out.println("Space: " + spaces[minX][minY]);
+					if(spaces[minX][minY].isOccupied() && spaces[minX][minY].equals(spaces[p.getOldX()][p.getOldY()])) {
+						System.out.println("One more piece");
+						piecesBetweenKing++;
+					}
 				}
 				if(piecesBetweenKing == 1) return false;
-			}
-			else if(Math.abs(king.getY() - tmp.getY()) == Math.abs(king.getX() - tmp.getX()) &&
+			}			else if(Math.abs(tmp.getY() - king.getY()) == Math.abs(tmp.getX() - king.getX()) &&
 					Math.abs(tmp.getY() - p.getOldY()) == Math.abs(tmp.getX() - p.getOldX())) {
+				System.out.println("Analizing \" ");
 				int minY = (king.getY() > tmp.getY())? tmp.getY() + 1 : king.getY() + 1;
 				int maxY = (king.getY() > tmp.getY())? king.getY() : tmp.getY();
 				int minX = (king.getX() > tmp.getX())? king.getX() - 1 : tmp.getX() - 1;
 				int maxX = (king.getX() > tmp.getX())? tmp.getX() : king.getX();
 				for(; minX > maxX && minY < maxY; minX--, minY++) {
-					if(spaces[minX][minY].isOccupied())piecesBetweenKing++;
+					System.out.println("Space: " + spaces[minX][minY]);
+					if(spaces[minX][minY].isOccupied() && spaces[minX][minY].equals(spaces[p.getOldX()][p.getOldY()])) {
+						System.out.println("One more piece");
+						piecesBetweenKing++;
+					}
 				}
 				if(piecesBetweenKing == 1) return false;
 			}
@@ -1411,7 +1430,6 @@ public class ChessBoard extends GridPane {
 	/************** LÓGICA PARA ENROCARSE **************************/
 	/************** aun faltan ciertas validaciones ****************/
 	private boolean castleCheck(MoveInfo p, MoveList m){
-		int tmp1;
 		String pieceName = spaces[p.getOldX()][p.getOldY()].getPiece().getName();
 		if(pieceName.equals("king")) {
 			if(m.isEqual(MoveList.KING_CASTLE_KINGSIDE) && !this.kingInCheck) {
@@ -1591,7 +1609,7 @@ public class ChessBoard extends GridPane {
 						}
 						return true;
 					}
-				}
+				} 
 			}
 			// if the target square doesn't have an opposing piece, don't allow move
 			if ((!newSpace.isOccupied()) || piece.getColor() == newSpace.getPiece().getColor()) {
