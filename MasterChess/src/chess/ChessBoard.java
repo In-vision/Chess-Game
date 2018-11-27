@@ -1634,7 +1634,7 @@ public class ChessBoard extends GridPane {
 //					else if (!playerTurn && spaces[i][j].getPieceColor() == "black")
 //						spaces[i][j].setDisable(true);
 //					else
-//						spaces[i][j].setDisable(false);aassfsdfsfsdad
+//						spaces[i][j].setDisable(false);
 //				}
 //			}
 //		}
