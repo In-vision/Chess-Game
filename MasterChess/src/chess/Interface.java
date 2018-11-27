@@ -31,6 +31,8 @@ public class Interface extends Application {
 		} catch (Exception error) {
 			error.printStackTrace();
 			System.exit(0);
+			
+			
 		}
 	}
 
