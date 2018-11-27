@@ -1291,6 +1291,7 @@ public class ChessBoard extends GridPane {
 						piecesBetweenKing++;
 					}
 				}
+				
 				if(piecesBetweenKing == 1) return false;
 			}			else if(Math.abs(tmp.getY() - king.getY()) == Math.abs(tmp.getX() - king.getX()) &&
 					Math.abs(tmp.getY() - p.getOldY()) == Math.abs(tmp.getX() - p.getOldX())) {
