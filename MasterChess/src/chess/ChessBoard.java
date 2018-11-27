@@ -52,8 +52,8 @@ public class ChessBoard extends GridPane {
 //				this.spaces[row][column].autosize();
 
 				/*
-				 * Si es blancas, añade al gridPane de manera que la esquina izquierda sea 0,0
-				 * Si es negras,  añade al gridPane de manera que la esquina izquierda sea 7,7
+				 * Si es blancas, aï¿½ade al gridPane de manera que la esquina izquierda sea 0,0
+				 * Si es negras,  aï¿½ade al gridPane de manera que la esquina izquierda sea 7,7
 				 */
 				if (colorPieces) 	this.add(this.spaces[row][column], row, 7 - column);
 				else 				this.add(this.spaces[row][column], 7 - row, column);
@@ -676,7 +676,7 @@ public class ChessBoard extends GridPane {
 	private void threadHandler(Space oldSquare, Space newSquare, Piece movedPiece, Piece prevTakenPiece) {
 		boolean check = false;
 		if(prevTakenPiece != null) threadSwitch(prevTakenPiece, newSquare, false, true);
-		/* Pone las nuevas casillas amenazadas, además de que checa si hay un jaque directo */
+		/* Pone las nuevas casillas amenazadas, ademï¿½s de que checa si hay un jaque directo */
 		boolean directCheck = threadSwitch(movedPiece, newSquare, true, false); 
 		if(directCheck) this.piecesChecking.add(newSquare);
 		blockingPathChecker(newSquare);
@@ -1430,7 +1430,7 @@ public class ChessBoard extends GridPane {
 		}
 		return false;
 	}
-	/************** LÓGICA PARA ENROCARSE **************************/
+	/************** Lï¿½GICA PARA ENROCARSE **************************/
 	/************** aun faltan ciertas validaciones ****************/
 	private boolean castleCheck(MoveInfo p, MoveList m){
 		String pieceName = spaces[p.getOldX()][p.getOldY()].getPiece().getName();
@@ -1634,11 +1634,12 @@ public class ChessBoard extends GridPane {
 //					else if (!playerTurn && spaces[i][j].getPieceColor() == "black")
 //						spaces[i][j].setDisable(true);
 //					else
-//						spaces[i][j].setDisable(false);
+//						spaces[i][j].setDisable(false);aassfsdfsfsdad
 //				}
 //			}
 //		}
 //	}
+
 	
 
 }
