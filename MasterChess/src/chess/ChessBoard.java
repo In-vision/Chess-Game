@@ -2,7 +2,6 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.media.Media;
@@ -47,9 +46,9 @@ public class ChessBoard extends GridPane {
 			for (int column = 0; column < 8; column++) {
 				boolean isLightSquare = ((row + column) % 2 != 0); //Controla colores de casillas
 				this.spaces[row][column] = new Space(isLightSquare, row, column);
+
+				this.spaces[row][column].prefWidthProperty().bind(this.widthProperty());	
 				this.spaces[row][column].prefHeightProperty().bind(this.heightProperty());
-				this.spaces[row][column].prefWidthProperty().bind(this.widthProperty());
-//				this.spaces[row][column].autosize();
 
 				/*
 				 * Si es blancas, añade al gridPane de manera que la esquina izquierda sea 0,0
@@ -105,6 +104,7 @@ public class ChessBoard extends GridPane {
 	public void initialPos() {
 		/*	Piezas blancas	*/
 		this.spaces[0][0].setPiece(new Rook(true));
+//		this.spaces[0][0].getPiece().getImage().
 		this.spaces[1][0].setPiece(new Knight(true));
 		this.spaces[2][0].setPiece(new Bishop(true));
 		this.spaces[3][0].setPiece(new Queen(true));
@@ -244,6 +244,7 @@ public class ChessBoard extends GridPane {
 			Piece movedPiece = oldSquare.releasePiece();
 			Piece previousTakenPiece = null;
 			threadSwitch(movedPiece, oldSquare, false, false); //Quitar casillas que la pieza amenazaba
+			System.out.println("hi1 " + spaces[3][3].getBlackThreads());
 			if(this.pawnHasPromoted && ChessBoard.playerTurn) {
 				previousTakenPiece = newSquare.releasePiece();
 				newSquare.setPiece(new Queen(true));
@@ -676,11 +677,16 @@ public class ChessBoard extends GridPane {
 	private void threadHandler(Space oldSquare, Space newSquare, Piece movedPiece, Piece prevTakenPiece) {
 		boolean check = false;
 		if(prevTakenPiece != null) threadSwitch(prevTakenPiece, newSquare, false, true);
+		System.out.println("hi2 " + spaces[3][3].getBlackThreads());
 		/* Pone las nuevas casillas amenazadas, además de que checa si hay un jaque directo */
 		boolean directCheck = threadSwitch(movedPiece, newSquare, true, false); 
+		System.out.println("hi3 " + spaces[3][3].getBlackThreads());
 		if(directCheck) this.piecesChecking.add(newSquare);
-		blockingPathChecker(newSquare);
+		blockingPathChecker(oldSquare, newSquare);
+		System.out.println("hi4 " + spaces[3][3].getBlackThreads());
 		discoveredCheckChecker(oldSquare, newSquare);
+		System.out.println("hi5 " + spaces[3][3].getBlackThreads());
+
 		this.piecesGivingCheck = (check) ? ++this.piecesGivingCheck: this.piecesGivingCheck;
 		this.kingInCheck =  directCheck || this.discoveredCheck;
 	}
@@ -746,20 +752,20 @@ public class ChessBoard extends GridPane {
 		return true;
 	}
 	
-	private void blockingPathChecker(Space newSquare){
+	private void blockingPathChecker(Space oldSquare, Space newSquare){
 		if(this.castled) return;
 		for(Space tmp : whitePieces) {
 			
 			if(!newSquare.equals(tmp)) {
 				if(tmp.getPiece().getName().equals("rook")) {
-					blockRookSquares(tmp, newSquare, true);
+					blockRookSquares(tmp, oldSquare, newSquare, true);
 				}
 				if(tmp.getPiece().getName().equals("bishop")) {
-					blockBishopSquares(tmp, newSquare, true);
+					blockBishopSquares(tmp, oldSquare, newSquare, true);
 				}
 				if(tmp.getPiece().getName().equals("queen")) {
-					blockRookSquares(tmp, newSquare, true);
-					blockBishopSquares(tmp, newSquare, true);
+					blockRookSquares(tmp, oldSquare, newSquare, true);
+					blockBishopSquares(tmp, oldSquare, newSquare, true);
 				}
 			}
 		}
@@ -767,20 +773,20 @@ public class ChessBoard extends GridPane {
 		for(Space tmp : blackPieces){
 			if(!newSquare.equals(tmp)) {
 				if(tmp.getPiece().getName().equals("rook")) {
-					blockRookSquares(tmp, newSquare, false);
+					blockRookSquares(tmp, oldSquare, newSquare, false);
 				}
 				if(tmp.getPiece().getName().equals("bishop")) {
-					blockBishopSquares(tmp, newSquare, false);
+					blockBishopSquares(tmp, oldSquare, newSquare, false);
 				}
 				if(tmp.getPiece().getName().equals("queen")) {
-					blockRookSquares(tmp, newSquare, false);
-					blockBishopSquares(tmp, newSquare, false);
+					blockRookSquares(tmp, oldSquare, newSquare, false);
+					blockBishopSquares(tmp, oldSquare, newSquare, false);
 				}
 			}
 		}
 	}
 	
-	private void blockBishopSquares(Space tmp, Space newSquare, boolean blackOrWhite) {
+	private void blockBishopSquares(Space tmp, Space oldSquare, Space newSquare, boolean blackOrWhite) {
 		int minX, maxX, minY, maxY;
 		boolean pieceInTheMiddle = false;
 		if((newSquare.getY() - tmp.getY()) == (newSquare.getX() - tmp.getX())) {
@@ -838,15 +844,16 @@ public class ChessBoard extends GridPane {
 		}
 	}
 	
-	private void blockRookSquares(Space tmp, Space newSquare, boolean blackOrWhite) {
+	private void blockRookSquares(Space tmp, Space oldSquare, Space newSquare, boolean blackOrWhite) {
 		int min, max;
 		boolean pieceInTheMiddle = false;
-		if(tmp.getX() == newSquare.getX()) {
+		if(tmp.getX() == newSquare.getX() && oldSquare.getX() != newSquare.getX()) {
 			min = (tmp.getY() > newSquare.getY())? newSquare.getY() : tmp.getY();
 			max = (tmp.getY() > newSquare.getY())? tmp.getY() : newSquare.getY();
-			
+			System.out.println("min: " + min  + " max: " + max );
 			for(int i = min + 1; i < max; i++) {
 				if(spaces[tmp.getX()][i].isOccupied()) {
+					System.out.println("isOccupied");
 					pieceInTheMiddle = true;
 					break;
 				}
@@ -866,7 +873,7 @@ public class ChessBoard extends GridPane {
 				}
 			}
 		}
-		else if(tmp.getY() == newSquare.getY()) {
+		else if(tmp.getY() == newSquare.getY() && oldSquare.getY() != newSquare.getY()) {
 			min = (tmp.getX() > newSquare.getX())? newSquare.getX() : tmp.getX();
 			max = (tmp.getX() > newSquare.getX())? tmp.getX() : newSquare.getX();
 			
@@ -1032,7 +1039,6 @@ public class ChessBoard extends GridPane {
 	}
 	
 	private void kingThreadChecker(int x, int y, boolean giveOrTake, boolean capturedPiece) {
-		System.out.println("on KingThreadChecker : " + spaces[5][0].getWhiteThreads());
 		boolean playerTurn = (capturedPiece)? !ChessBoard.playerTurn : ChessBoard.playerTurn;
 		if(x < 7) spaces[x + 1][y].threadHandlerAndChecker(giveOrTake, playerTurn);
 		if(x > 0) spaces[x - 1][y].threadHandlerAndChecker(giveOrTake, playerTurn);	
@@ -1102,20 +1108,9 @@ public class ChessBoard extends GridPane {
 		Space newSpace;
 		Piece piece;
 		MoveList[] moves;
-
-		// TODO:
-		// -Check if player's king is put into check
-		// -Pawn logic (Possibly implement as part of pawn's movelist?)
-		// -Castling logic
-
-		// Check for null move
 		if (p == null) {
 			return false;
 		}
-
-		// Note: Ideally we would check the space coordinates
-		// beforehand, but the try-catch blocks below were
-		// easier to implement.
 
 		// Check if oldSpace in range
 		try {
@@ -1188,8 +1183,6 @@ public class ChessBoard extends GridPane {
 				// if stretched move matches made move
 				if (p.getGapX() == stretchedMoveX && p.getGapY() == stretchedMoveY) {
 					matchesPieceMoves = true;
-					prevWhiteMoveList = (ChessBoard.playerTurn  && changePrev)? m: prevWhiteMoveList;
-					prevBlackMoveList = (!ChessBoard.playerTurn && changePrev)? m: prevBlackMoveList;
 					if(doesntLeaveKingAttacked(p) == false) {
 						System.out.println("Leaving king attacked");
 						return false;
@@ -1211,7 +1204,8 @@ public class ChessBoard extends GridPane {
 						System.out.println("Pawn validity");
 						return false;
 					}
-
+					prevWhiteMoveList = (ChessBoard.playerTurn  && changePrev)? m: prevWhiteMoveList;
+					prevBlackMoveList = (!ChessBoard.playerTurn && changePrev)? m: prevBlackMoveList;
 					piece.setHasMoved(true);
 					// breaks out of MoveLoop (both loops)
 					break MoveLoop;
@@ -1240,22 +1234,29 @@ public class ChessBoard extends GridPane {
 				break;
 			}
 		}
-		if(king.getX() == p.getOldX() && king.getY() == p.getOldY()) return true;
+		if(king.getX() == p.getOldX() && king.getY() == p.getOldY() && !this.kingInCheck) return true;
 		
 		for(Space tmp : enemyPieces) {
 			if(tmp.getPiece().getName().equals("rook")) {
 				kingSafe = rookAttacksKing(king, tmp, p);
-				System.out.println(tmp);
-				if(!kingSafe) return false;
+				if(!kingSafe) {
+					System.out.println(tmp + " - " + spaces[p.oldX][p.oldY]);
+					return false;
+				}
 			}
 			else if(tmp.getPiece().getName().equals("bishop")){
 				kingSafe = bishopAttacksKing(king, tmp, p);
-				if(!kingSafe) return false;
+				if(!kingSafe) {
+					System.out.println(tmp + " - " + spaces[p.oldX][p.oldY]);
+					return false;
+				}
 			}
 			else if(tmp.getPiece().getName().equals("queen")) {
 				kingSafe = rookAttacksKing(king, tmp, p) && bishopAttacksKing(king, tmp, p);
-				System.out.println(tmp);
-				if(!kingSafe) return false;
+				if(!kingSafe) {
+					System.out.println(tmp + " - " + spaces[p.oldX][p.oldY]);
+					return false;
+				}
 			}
 		}
 		
@@ -1264,6 +1265,24 @@ public class ChessBoard extends GridPane {
 	
 	private boolean rookAttacksKing(Space king, Space tmp, MoveInfo p) {
 		int piecesBetweenKing = 0;
+		if(king.equals(spaces[p.getOldX()][p.getOldY()]) && this.kingInCheck) {
+			if(king.getX() == tmp.getX()) {
+				if(king.getY() > tmp.getY()) {
+					if(p.getNewX() == p.getOldX() && p.getNewY() > p.getOldY()) return false;
+				}
+				if(king.getY() < tmp.getY()) {
+					if(p.getNewX() == p.getOldX() && p.getNewY() < p.getOldY()) return false;
+				}
+			}
+			else if(king.getY() == tmp.getY()) {
+				if(king.getX() > tmp.getX()) {
+					if(p.getNewY() == p.getOldY() && p.getNewX() > p.getOldX()) return false;
+				}
+				if(king.getX() < tmp.getX()) {
+					if(p.getNewY() == p.getOldY() && p.getNewX() < p.getOldX()) return false;
+				}
+			}
+		}
 		if(king.getX() == tmp.getX() && tmp.getX() == p.getOldX() && p.getOldX() != p.getNewX()) {
 			int min = (king.getY() > tmp.getY())? tmp.getY() + 1 : king.getY() + 1;
 			int max = (king.getY() > tmp.getY())? king.getY() : tmp.getY();
@@ -1285,6 +1304,17 @@ public class ChessBoard extends GridPane {
 	
 	private boolean bishopAttacksKing(Space king, Space tmp, MoveInfo p) {
 		int piecesBetweenKing = 0;
+		if(king.equals(spaces[p.getOldX()][p.getOldY()]) && this.kingInCheck
+				&& !tmp.equals(spaces[p.getNewX()][p.getNewY()])){
+			if((tmp.getY() - king.getY()) == (tmp.getX() - king.getX())) {
+				if((tmp.getY() - p.getNewY()) == (tmp.getX() - p.getNewX())) return false;
+			}
+			else if(Math.abs(tmp.getY() - king.getY()) == Math.abs(tmp.getX() - king.getX())) {
+				if(Math.abs(tmp.getY() - p.getNewY()) == Math.abs(tmp.getX() - p.getNewX())) return false;
+			}
+		}
+		if(tmp.equals(spaces[p.getNewX()][p.getNewY()])) return true;
+		
 		if( (tmp.getY() - king.getY()) == (tmp.getX() - king.getX()) &&
 				(king.getY() - p.getOldY()) == (king.getX() - p.getOldX()) ) {
 				int minY = (king.getY() > tmp.getY())? tmp.getY() + 1 : king.getY() + 1;
@@ -1299,7 +1329,8 @@ public class ChessBoard extends GridPane {
 				
 				if(piecesBetweenKing == 1) return false;
 			}			else if(Math.abs(tmp.getY() - king.getY()) == Math.abs(tmp.getX() - king.getX()) &&
-					Math.abs(king.getY() - p.getOldY()) == Math.abs(king.getX() - p.getOldX())) {
+					Math.abs(king.getY() - p.getOldY()) == Math.abs(king.getX() - p.getOldX()) && 
+					Math.abs(tmp.getY() - p.getOldY()) == Math.abs(tmp.getX() - p.getOldX())) {
 				int minY = (king.getY() > tmp.getY())? tmp.getY() + 1 : king.getY() + 1;
 				int maxY = (king.getY() > tmp.getY())? king.getY() : tmp.getY();
 				int minX = (king.getX() > tmp.getX())? king.getX() - 1 : tmp.getX() - 1;
@@ -1328,6 +1359,8 @@ public class ChessBoard extends GridPane {
 		
 	}
 	
+	
+	
 	private boolean kingInCheckValidator(MoveInfo p) { 
 		
 		if(this.kingInCheck) {
@@ -1339,10 +1372,13 @@ public class ChessBoard extends GridPane {
 			}
 			else {
 				if(spaces[p.getOldX()][p.getOldY()].getPiece().getName().equals("king")) {
-					if(ChessBoard.playerTurn && !spaces[p.newX][p.newY].isThreatenedByBlack()) {
+					if(ChessBoard.playerTurn && !spaces[p.newX][p.newY].isThreatenedByBlack() && 
+							doesntLeaveKingAttacked(p)) {
+					
 						movePossible = true;
 					}
-					if(!ChessBoard.playerTurn && !spaces[p.newX][p.newY].isThreatenedByWhite()) {
+					if(!ChessBoard.playerTurn && !spaces[p.newX][p.newY].isThreatenedByWhite() &&
+							doesntLeaveKingAttacked(p)) {
 						movePossible = true;
 					}
 				}
