@@ -51,8 +51,8 @@ public class ChessBoard extends GridPane {
 				this.spaces[row][column].prefHeightProperty().bind(this.heightProperty());
 
 				/*
-				 * Si es blancas, añade al gridPane de manera que la esquina izquierda sea 0,0
-				 * Si es negras,  añade al gridPane de manera que la esquina izquierda sea 7,7
+				 * Si es blancas, aï¿½ade al gridPane de manera que la esquina izquierda sea 0,0
+				 * Si es negras,  aï¿½ade al gridPane de manera que la esquina izquierda sea 7,7
 				 */
 				if (colorPieces) 	this.add(this.spaces[row][column], row, 7 - column);
 				else 				this.add(this.spaces[row][column], 7 - row, column);
@@ -677,15 +677,12 @@ public class ChessBoard extends GridPane {
 	private void threadHandler(Space oldSquare, Space newSquare, Piece movedPiece, Piece prevTakenPiece) {
 		boolean check = false;
 		if(prevTakenPiece != null) threadSwitch(prevTakenPiece, newSquare, false, true);
-		System.out.println("hi2 " + spaces[3][3].getBlackThreads());
-		/* Pone las nuevas casillas amenazadas, además de que checa si hay un jaque directo */
+		/* Pone las nuevas casillas amenazadas, ademï¿½s de que checa si hay un jaque directo */
+		/* Pone las nuevas casillas amenazadas, ademï¿½s de que checa si hay un jaque directo */
 		boolean directCheck = threadSwitch(movedPiece, newSquare, true, false); 
-		System.out.println("hi3 " + spaces[3][3].getBlackThreads());
 		if(directCheck) this.piecesChecking.add(newSquare);
 		blockingPathChecker(oldSquare, newSquare);
-		System.out.println("hi4 " + spaces[3][3].getBlackThreads());
 		discoveredCheckChecker(oldSquare, newSquare);
-		System.out.println("hi5 " + spaces[3][3].getBlackThreads());
 
 		this.piecesGivingCheck = (check) ? ++this.piecesGivingCheck: this.piecesGivingCheck;
 		this.kingInCheck =  directCheck || this.discoveredCheck;
@@ -1466,7 +1463,7 @@ public class ChessBoard extends GridPane {
 		}
 		return false;
 	}
-	/************** LÓGICA PARA ENROCARSE **************************/
+	/************** Lï¿½GICA PARA ENROCARSE **************************/
 	/************** aun faltan ciertas validaciones ****************/
 	private boolean castleCheck(MoveInfo p, MoveList m){
 		String pieceName = spaces[p.getOldX()][p.getOldY()].getPiece().getName();
@@ -1675,6 +1672,7 @@ public class ChessBoard extends GridPane {
 //			}
 //		}
 //	}
+
 	
 
 }
