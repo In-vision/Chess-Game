@@ -26,3 +26,33 @@
 .button:disabled{
 	-fx-opacity:2.0;
 }
+
+.buttonLogin{
+	-fx-font-color: #ffffff;
+	-fx-color: #f7bd1d;
+	-fx-background-color: #f7bd1d; /* Login */
+    -fx-padding: 4px 12px 4px 12px;
+    -fx-text-align: center;
+    -fx-text-decoration: none;
+    -fx-display: inline-block;
+    -fx-font-size: 16px;
+    -fx-text-fill: black;
+	-fx-font-weight: bold;
+}
+
+.login{
+	-fx-background-color: #6d6d6d;
+}
+
+.combob{
+	-fx-focus-color: transparent; 
+}
+
+.labelLogin{
+	-fx-font-size: 16px;
+	-fx-font-color: #ffffff;
+	-fx-font-weight: bold;
+	
+}
+
+

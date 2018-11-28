@@ -3,6 +3,7 @@ package chess;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.media.Media;
@@ -13,7 +14,8 @@ public class ChessBoard extends GridPane {
 
 	public Space activeSquare = null;	//Ultima casilla clickeada
 	public static boolean playerTurn = true; //True para blancas. False para negras
-	
+	public Label turn = null;
+	public String playerTurnStr;
 	public Space previousWhiteMove = null;
 	public Space previousBlackMove = null;
 	public MoveList prevWhiteMoveList = null;
@@ -87,7 +89,26 @@ public class ChessBoard extends GridPane {
 	public Space getActiveSpace() {
 		return this.activeSquare;
 	}
+	
+	public void setLabelTurn(Label turn) {
+		this.turn = turn;
+		if(ChessBoard.playerTurn) {
+			this.turn.setText("Blancas");
+		}else {
+			this.turn.setText("Negras");
+		}
+	}
 
+	public void changePlayerStr(){
+
+		if(!ChessBoard.playerTurn) {
+			this.turn.setText("Negras");
+		}else {
+			this.turn.setText("Blancas");
+		}
+
+	}
+	
 	// prints location of all pieces on the board
 	// TODO: Unfinished
 	public String toString() {
@@ -229,7 +250,7 @@ public class ChessBoard extends GridPane {
 	
 	// Process a move after it has been made by a player
 	protected boolean moveProcesser(MoveInfo p){
-		int hola;
+		System.out.println("move processer");
 		if (moveIsValid(p, true) && !this.checkmate) {
 			this.kingInCheck = false;
 			this.discoveredCheck = false;
@@ -295,6 +316,10 @@ public class ChessBoard extends GridPane {
 			threadHandler(oldSquare, newSquare, movedPiece, previousTakenPiece);
 			this.castled = false;
 			ChessBoard.playerTurn = !ChessBoard.playerTurn;
+			
+			
+			changePlayerStr();
+			
 			if(this.kingInCheck && !ChessBoard.playerTurn) {
 				this.checkmate = checkMateChecker(blackPieces);
 			}
