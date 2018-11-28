@@ -1,6 +1,5 @@
 package chess;
 
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 //import java.util.Optional;
 
@@ -19,7 +18,6 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 //import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -61,11 +59,27 @@ public class Interface extends Application {
 		// draw chessboard
 		board = new ChessBoard(playerIsWhite);
 //		root.getChildren().add(board);
-		
+//		root.heightProperty().addListener(new ChangeListener() {
+//			@Override
+//			public void changed(ObservableValue arg0, Object arg1, Object arg2) {
+//				double height = (double) arg2;
+//				board.setPrefHeight(height-50);
+//			}
+//			
+//		});
+//		
+//		root.widthProperty().addListener(new ChangeListener() {
+//			@Override
+//			public void changed(ObservableValue arg0, Object arg1, Object arg2) {
+//				double height = (double) arg2;
+//				board.setPrefHeight(height-50);
+//			}
+//			
+//		});
 		root.setCenter(board); // sized 400x400
 		root.setBottom(playerTurn);
-		board.prefWidthProperty().bind(root.widthProperty());
-		board.prefHeightProperty().bind(root.heightProperty());
+//		board.prefWidthProperty().bind(root.widthProperty());
+//		board.prefHeightProperty().bind(root.heightProperty());
 		// add menuBar
 		MenuBar menuBar = generateMenuBar();
 		root.setTop(menuBar);
