@@ -11,7 +11,18 @@ public enum MoveList {
 	DOUBLE_UP(0, 2), DOUBLE_DOWN(0, -2), KING_CASTLE_KINGSIDE(2, 0), KING_CASTLE_QUEENSIDE(-2,0);
 	private int x;
 	private int y;
-
+	
+	private void a() {
+		MoveList tmp;
+		for(MoveList move : MoveList.values()) {
+			if(move.isEqual(2, 3)) {
+				tmp = move;
+				break;
+			}
+			
+		}
+	}
+	
 	private void setX(int x) {
 		this.x = x;
 	}

@@ -59,7 +59,8 @@ xmlns="http://javafx.com/javafx/2.2" fx:controller="interfaces.FXMLController"  
 	
 	<HBox fx:id="hBoxBackButton">
 		<children>
-			<Button fx:id="backButton"></Button>
+			<Button fx:id="backButton" text="BACK">
+		</Button>
 		</children>
 	</HBox>
 	</children>

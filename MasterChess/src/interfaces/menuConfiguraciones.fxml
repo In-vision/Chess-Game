@@ -73,7 +73,7 @@
 				<Insets top="15" left="0" bottom="15" right="0"/>
 			</VBox.margin>
 		</HBox>
-		<Button fx:id="backButton">
+		<Button fx:id="backButton" text="BACK">
 			<VBox.margin>
 				<Insets top="5" left="950" bottom="0" right="0"/>
 			</VBox.margin>

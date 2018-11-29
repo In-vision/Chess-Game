@@ -1,8 +1,13 @@
 package chess;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 import database.Driver;
@@ -62,7 +67,9 @@ public class Interface extends Application {
 	private Label resultP1, resultP2;
 	private int langID = 1, voiceID = 1, themeID = 1;
 	private int gameID = 0;
-
+	
+	private String userName;
+	
 	@Override
 	public void start(Stage mainStage) throws IOException {
 		stage = mainStage;
@@ -80,7 +87,7 @@ public class Interface extends Application {
 		mainScene.getStylesheets().add("/res/stylesheet.css");
 
 		// draw chessboard
-		board = new ChessBoard(playerIsWhite, this.langID, this.voiceID, this.themeID);
+		board = new ChessBoard(playerIsWhite, this.langID, this.voiceID, this.themeID, true);
 		login = new Login();
 		signup = new Signup();
 		mainMenu = new MenuPrincipal();
@@ -110,7 +117,7 @@ public class Interface extends Application {
 		signup.signup.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
 			try {
 				insertPlayer();
-				initBoardScene(stage, board);
+				initMainMenu(stage, mainMenu, 2);
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
@@ -118,7 +125,7 @@ public class Interface extends Application {
 
 		signup.backButt.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
 			initLogin(stage, login);
-			board = new ChessBoard(playerIsWhite, this.langID, this.voiceID, this.themeID);
+			board = new ChessBoard(playerIsWhite, this.langID, this.voiceID, this.themeID, true);
 		});
 
 		stage.show();
@@ -131,7 +138,7 @@ public class Interface extends Application {
 			areValidCredentials = false;
 			String userNorMail = login.username.getText();
 			String lPassword = login.password.getText();
-
+			
 			System.out.println("Credentials: ");
 			System.out.println("User: " + userNorMail);
 			System.out.println("Password: " + lPassword);
@@ -152,6 +159,7 @@ public class Interface extends Application {
 					if ((userNorMail.equals(username) || userNorMail.equals(email)) && (lPassword.equals(password))) {
 						System.out.println("Valid user");
 						areValidCredentials = true;
+						this.userName = username;
 						break;
 					}
 				}
@@ -232,9 +240,31 @@ public class Interface extends Application {
 		mainStage.show();
 	}
 
-	private void initBoardScene(Stage mainStage, ChessBoard board) throws SQLException {
+	private void initBoardScene(Stage mainStage, boolean isNewGame, int calledFrom) throws SQLException {
 		System.out.println("Init board scene");
-		board = new ChessBoard(playerIsWhite, this.langID, this.voiceID, this.themeID);
+		if(isNewGame) {
+			board = new ChessBoard(playerIsWhite, this.langID, this.voiceID, this.themeID, isNewGame);
+		}
+		else {
+			board = new ChessBoard(playerIsWhite, this.langID, this.voiceID, this.themeID, isNewGame);
+			
+			String path = userName + calledFrom + ".txt";
+			Path myGame = Paths.get(path);
+			if(!Files.exists(myGame)) {
+				board = new ChessBoard(playerIsWhite, this.langID, this.voiceID, this.themeID, true);
+			}
+			else {
+				List<String> lines;
+				try {
+					lines = Files.readAllLines(myGame);
+					board = new ChessBoard(lines);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		}
 
 		this.cantPlayAnymore = false;
 		BorderPane rootTmp = new BorderPane();
@@ -347,7 +377,7 @@ public class Interface extends Application {
 		BorderPane.setMargin(players, new Insets(0, 0, 0, 10));
 		BorderPane.setAlignment(playerTurn, Pos.CENTER);
 		playerTurn.setTextAlignment(TextAlignment.CENTER);
-		Scene boardScene = new Scene(rootTmp, 580, 460);
+		Scene boardScene = new Scene(rootTmp, 580, 480);
 		boardScene.getStylesheets().add("/res/stylesheet.css");
 		mainStage.setScene(boardScene);
 		mainStage.show();
@@ -412,7 +442,71 @@ public class Interface extends Application {
 		resultP2.setText("1/2");
 		this.cantPlayAnymore = true;
 	}
+	
+	public void onDisplayFullDatabase() {
+		Alert infoAlert = new Alert(AlertType.INFORMATION);
+		infoAlert.setTitle("Database FULL");
+		infoAlert.setHeaderText(null);
 
+		// Set window icon
+		Stage alertStage = (Stage) infoAlert.getDialogPane().getScene().getWindow();
+		alertStage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/about.png")));
+
+		infoAlert.setContentText("You've used your three save slots. Please feel free to pay for more!\n");
+		infoAlert.showAndWait();
+	}
+	
+	private void saveGame() throws IOException, SQLException {
+		String[] savedFileStrings = new String[66];
+		int lineCounter = 0, count = 0;
+		String turn = (ChessBoard.playerTurn)? "true" : "false";
+		savedFileStrings[lineCounter] = turn;
+		lineCounter++;
+		savedFileStrings[lineCounter] = String.valueOf(board.kingInCheck);
+		lineCounter++;
+		String x, y, isThreatenedByWhite, isThreatenedByBlack,whiteThreads, blackThreads,piece, color;
+		for (int row = 0; row < 8; row++) {
+			for (int column = 0; column < 8; column++) {
+				Space temp = ChessBoard.spaces[row][column];
+				x = String.valueOf(temp.getX());
+				y = String.valueOf(temp.getY());
+				isThreatenedByWhite = String.valueOf(temp.isThreatenedByWhite());
+				isThreatenedByBlack = String.valueOf(temp.isThreatenedByBlack());
+				whiteThreads = String.valueOf(temp.getWhiteThreads());
+				blackThreads = String.valueOf(temp.getBlackThreads());
+				piece = (temp.getPiece() == null)? null : temp.getPiece().getName();
+				color = (piece == null)? null: temp.getPieceColor();
+				if(piece != null) count++;
+				String concat = x + "," + y + "," + isThreatenedByWhite + "," +
+						isThreatenedByBlack+","+whiteThreads+","+blackThreads+","+piece+","+color;
+				savedFileStrings[lineCounter] = concat;
+				lineCounter++;
+//				System.out.println(concat);
+				
+			}
+		}
+		System.out.println("hola : " + userName);
+		int userID = mcDriver.selectUserID(userName);
+		int noGames = mcDriver.selectGamesFromUser(userID);
+		if(noGames == 3) {
+			onDisplayFullDatabase();
+			return;
+		}
+		int gameID = noGames + 1;
+		System.out.println("Save game: " + userID + ", " + noGames);
+		String fileName = userName + gameID + ".txt";
+		System.out.println(fileName);
+		Path myPath = Paths.get(fileName);
+		Files.write(myPath, Arrays.asList(savedFileStrings));
+		
+		mcDriver.insertGamePath(gameID, userID, fileName);
+//		System.out.println("Reading file...");
+//		List<String> taqlo = Files.readAllLines(myPath);
+//		for(String aa: taqlo) {
+//			System.out.println(aa);
+//		}
+	}
+	
 	// Generate main menu bar
 	private MenuBar generateMenuBar() {
 		MenuBar menuBar = new MenuBar();
@@ -420,11 +514,21 @@ public class Interface extends Application {
 		Menu exitMenu = new Menu("Exit");
 		MenuItem menuItemQuit = new MenuItem("Quit");
 		MenuItem menuItemSignout = new MenuItem("Sign out");
+		MenuItem menuItemSave = new MenuItem("Save and Quit");
 		menuItemQuit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
 		menuItemSignout.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN));
+		menuItemSave.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
 		menuItemQuit.setOnAction(e -> onQuit());
 		menuItemSignout.setOnAction(e -> initLogin(stage, login));
-		exitMenu.getItems().addAll(menuItemQuit, menuItemSignout);
+		menuItemSave.setOnAction(e -> {
+			try {
+				saveGame();
+			} catch (IOException | SQLException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+		});
+		exitMenu.getItems().addAll(menuItemQuit, menuItemSignout, menuItemSave);
 
 		Menu gameMenu = new Menu("Game");
 		MenuItem menuItemDraw = new MenuItem("Draw");
@@ -437,8 +541,8 @@ public class Interface extends Application {
 		menuItemReset.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
 		menuItemReset.setOnAction(e -> {
 			try {
-				board = new ChessBoard(playerIsWhite, this.langID, this.voiceID, this.themeID);
-				initBoardScene(stage, board);
+				board = new ChessBoard(playerIsWhite, this.langID, this.voiceID, this.themeID, true);
+				initBoardScene(stage, true, 0);
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
@@ -508,13 +612,30 @@ public class Interface extends Application {
 	private void loadGames() {
 		this.gameLogs.load1.setOnAction(e -> {
 			try {
-				initBoardScene(stage, board);
+				initBoardScene(stage, false, 1);
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
+		this.gameLogs.load2.setOnAction(e -> {
+			try {
+				
+				initBoardScene(stage, false, 2);
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		});
 		
+		this.gameLogs.load3.setOnAction(e -> {
+			try {
+				initBoardScene(stage, false ,3);
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
 		this.gameLogs.back.setOnAction(e -> {
 			try {
 				initMainMenu(stage, mainMenu, 2);

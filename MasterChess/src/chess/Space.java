@@ -96,6 +96,14 @@ public class Space extends Button {
 		return threatenedByBlack;
 	}
 
+	public void setThreatenedByWhite(boolean threatenedByWhite) {
+		this.threatenedByWhite = threatenedByWhite;
+	}
+
+	public void setThreatenedByBlack(boolean threatenedByBlack) {
+		this.threatenedByBlack = threatenedByBlack;
+	}
+
 	public boolean equals(Space b) {
 		if (this.x != b.x || this.y != b.y)
 			return false;
@@ -114,6 +122,14 @@ public class Space extends Button {
 		this.whiteThreads++;
 		if (this.whiteThreads > 0)
 			this.threatenedByWhite = true;
+	}
+
+	public void setWhiteThreads(int whiteThreads) {
+		this.whiteThreads = whiteThreads;
+	}
+
+	public void setBlackThreads(int blackThreads) {
+		this.blackThreads = blackThreads;
 	}
 
 	public void decWhiteThreads() {

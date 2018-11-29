@@ -11,19 +11,23 @@ public class Driver {
 	
 	private final String insertPlayer = "insert into masterchess.users (USER_ID, USERNAME, PASSWORD, EMAIL) "
 										+ "values (?, ?, ?, ?)";
-	
+	private final String selectUserID = "select USER_ID FROM masterchess.users WHERE USERNAME = ?";
+	private final String selectGamesFromUser = "select count(GAME_ID) FROM masterchess.GAMES WHERE USER_ID = ?";
+	private final String insertGame = "insert into masterchess.games (GAME_ID, USER_ID, GAME_PATH) VALUES (?, ?, ?)";
 	public Driver() {
 		try {
 			//Load Driver to get a Connection
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			//Get a connection
-			 masterChessConn = DriverManager.getConnection(CONN, "Isaac", "Pandita2357");
+			 masterChessConn = DriverManager.getConnection(CONN, "Ian", "asereje270898");
 			//Create Statement
 			 masterChessStatement = masterChessConn.createStatement();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
+	
 	
 	public ResultSet selectAllUsers() throws SQLException {
 		ResultSet rs = masterChessStatement.executeQuery("Select * from masterchess.users;");
@@ -33,6 +37,16 @@ public class Driver {
 	public ResultSet selectAllGames() throws SQLException{
 		ResultSet rs = masterChessStatement.executeQuery("Select * from masterchess.games");
 		return rs;
+	}
+	
+	public boolean insertGamePath(int gameID, int userID, String path) throws SQLException{
+		
+		mcPS = masterChessConn.prepareStatement(insertGame);
+		mcPS.setInt(1, gameID);
+		mcPS.setInt(2, userID);
+		mcPS.setString(3, path);
+		mcPS.execute();
+		return true;
 	}
 	
 	public boolean insertPlayer(String username, String email, String password) throws SQLException {
@@ -64,6 +78,30 @@ public class Driver {
 		return maxID;
 	}
 
+	public int selectUserID(String username) throws SQLException {
+		ResultSet rs;
+		mcPS = masterChessConn.prepareStatement(selectUserID);
+		mcPS.setString(1, username);
+		rs = mcPS.executeQuery();
+		int userID = 0;
+		if(rs.next()) {
+			userID = rs.getInt(1);
+		}
+		return userID;	
+	}
+	
+	public int selectGamesFromUser(int userID) throws NumberFormatException, SQLException {
+		int noGames = 0;
+		ResultSet rs;
+		mcPS = masterChessConn.prepareStatement(selectGamesFromUser);
+		mcPS.setInt(1, userID);
+		rs = mcPS.executeQuery();
+		if(rs.next()) {
+			noGames = rs.getInt(1);
+		}
+		return noGames;	
+	}
+	
 	public static void main(String[] args) {
 		try {
 		

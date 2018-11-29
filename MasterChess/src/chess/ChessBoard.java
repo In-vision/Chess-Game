@@ -1,7 +1,9 @@
 package chess;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -11,7 +13,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 public class ChessBoard extends GridPane {
-	public Space[][] spaces;
+	public static Space[][] spaces;
 
 	public Space activeSquare = null;	//Ultima casilla clickeada
 	public static boolean playerTurn = true; //True para blancas. False para negras
@@ -26,7 +28,8 @@ public class ChessBoard extends GridPane {
 	public boolean pawnHasPromoted = false;
 	public boolean castled = false;
 	
-	public boolean kingInCheck = false, discoveredCheck = false;
+	public static boolean kingInCheck = false;
+	public boolean discoveredCheck = false;
 	
 	public boolean checkmate = false;
 	
@@ -34,7 +37,8 @@ public class ChessBoard extends GridPane {
 	public ArrayList<Space> whitePieces = new ArrayList<>();
 	public HashMap<String, Space> whitePieces2 = new HashMap<>();
 	public ArrayList<Space> blackPieces = new ArrayList<>();
-	private int langID = 0, voiceID = 0, themeID = 0;
+	private int langID = 0, voiceID = 0;
+	public static int themeID = 0;
 	
 	public  ArrayList<Space> piecesChecking = new ArrayList<>();
 	/** Sound effects **/
@@ -44,7 +48,7 @@ public class ChessBoard extends GridPane {
 	Media pallaMate = new Media(getClass().getResource("/soundEffects/PallaMate.mp3").toExternalForm());
 	MediaPlayer soundPlayer = new MediaPlayer(standardChessMove);
 	/**               **/
-	public ChessBoard(boolean colorPieces, int langID, int voiceID, int themeID) {   
+	public ChessBoard(boolean colorPieces, int langID, int voiceID, int themeID, boolean isNewGame) {   
 		super();  
 		this.langID = langID;
 		this.voiceID = voiceID;
@@ -71,9 +75,80 @@ public class ChessBoard extends GridPane {
 			}
 		}
 		// Posiciones iniciales de las piezas
-		this.initialPos();
+		if(isNewGame)this.initialPos();
 	}
 
+	public ChessBoard (List<String> lines) {
+		super();
+		ChessBoard.isPlayable = true;
+		this.spaces = new Space[8][8];
+		for (int row = 0; row < 8; row++) {
+			for (int column = 0; column < 8; column++) {
+				boolean isLightSquare = ((row + column) % 2 != 0); //Controla colores de casillas
+				this.spaces[row][column] = new Space(isLightSquare, row, column, this.themeID);
+				/*
+				 * Si es blancas, a�ade al gridPane de manera que la esquina izquierda sea 0,0
+				 * Si es negras,  a�ade al gridPane de manera que la esquina izquierda sea 7,7
+				 */
+				if (ChessBoard.playerTurn) 	this.add(this.spaces[row][column], row, 7 - column);
+				else 				this.add(this.spaces[row][column], 7 - row, column);
+				
+				// Tiene que ser final para que el eventHandler funcione
+				final int tempRow 	 = row;
+				final int tempColumn = column;
+				System.out.println(ChessBoard.spaces[row][column]);
+				ChessBoard.spaces[row][column].addEventHandler(
+				MouseEvent.MOUSE_CLICKED, (e) -> clickOnSquare(ChessBoard.spaces[tempRow][tempColumn]));
+			}
+		}
+		
+		ChessBoard.playerTurn = Boolean.parseBoolean(lines.get(0));
+		ChessBoard.kingInCheck = Boolean.parseBoolean(lines.get(1));
+		
+		whitePieces.clear();
+		blackPieces.clear();
+		for(int i = 2; i < lines.size(); i++) {
+			String[] pieceInfo = lines.get(i).split(",");
+			System.out.println(Arrays.toString(pieceInfo));
+			int x = Integer.parseInt(pieceInfo[0]), y = Integer.parseInt(pieceInfo[1]);
+			ChessBoard.spaces[x][y].setThreatenedByWhite(Boolean.parseBoolean(pieceInfo[2]));
+			ChessBoard.spaces[x][y].setThreatenedByBlack(Boolean.parseBoolean(pieceInfo[3]));
+			ChessBoard.spaces[x][y].setWhiteThreads(Integer.parseInt(pieceInfo[4]));
+			ChessBoard.spaces[x][y].setBlackThreads(Integer.parseInt(pieceInfo[5]));
+			if(!pieceInfo[6].equals("null")) {
+				boolean pieceColor = (pieceInfo[7].equals("white")? true : false);
+				if(pieceColor) {
+					whitePieces.add(ChessBoard.spaces[x][y]);
+				}
+				else {
+					blackPieces.add(ChessBoard.spaces[x][y]);
+				}
+				switch(pieceInfo[6]) {
+				case "pawn": 
+					ChessBoard.spaces[x][y].setPiece(new Pawn(pieceColor));
+					break;
+				case "rook": 
+					ChessBoard.spaces[x][y].setPiece(new Rook(pieceColor));
+					break;
+				case "knight": 
+					ChessBoard.spaces[x][y].setPiece(new Knight(pieceColor));
+					break;
+				case "bishop": 
+					ChessBoard.spaces[x][y].setPiece(new Bishop(pieceColor));
+					break;
+				case "queen": 
+					ChessBoard.spaces[x][y].setPiece(new Queen(pieceColor));
+					break;
+				case "king": 
+					ChessBoard.spaces[x][y].setPiece(new King(pieceColor));
+					break;
+					default: break;
+				}
+			}
+		}
+		
+	}
+	
 	public Space getSpace(int x, int y) {
 		return this.spaces[x][y];
 	}
@@ -198,6 +273,7 @@ public class ChessBoard extends GridPane {
 		System.out.println("["+selectedSquare.getX()+"]["+selectedSquare.getY() +
 				"] threat by white: "+selectedSquare.isThreatenedByWhite() + " - " + selectedSquare.getWhiteThreads());
 		System.out.println("       threat by black: "+selectedSquare.isThreatenedByBlack()  + " - " + selectedSquare.getBlackThreads());
+		System.out.println("       Piece: " + selectedSquare.getPiece());
 		int x = selectedSquare.getX(), y = selectedSquare.getY();
 		if(this.checkmate || ChessBoard.isPlayable == false) return;
 		// Si una pieza ha sido seleccionada y no se selecciono en otra pieza del mismo color

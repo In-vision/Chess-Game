@@ -10,7 +10,7 @@
 
 <VBox fx:id="root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
 	<children>
-		<Label fx:id="turistaMundialLabel" text="CHESS">
+		<Label fx:id="turistaMundialLabel" text="PLAY CHESS PRO">
 			<VBox.margin>
 				<Insets top="60" left="0" bottom="90" right="0"/>
 			</VBox.margin>

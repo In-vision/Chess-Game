@@ -21,7 +21,6 @@ public class GamesLog extends VBox{
 		delete2 = (Button) fxmlResource.getNamespace().get("buttonDeleteSave2");
 		load3 = (Button) fxmlResource.getNamespace().get("buttonLoadSave3");
 		delete3 = (Button) fxmlResource.getNamespace().get("buttonDeleteSave3");
-
 		this.getChildren().add(root);
 		
 	}

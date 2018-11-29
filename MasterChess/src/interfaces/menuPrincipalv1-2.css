@@ -2,7 +2,7 @@
 
 VBox{
 	-fx-alignment: top-center;
-	-fx-background-image: url("backgroundchess.jpg");
+	-fx-background-image: url("backgroundChessImage.jpg");
 	-fx-background-size: cover;
 }
 
@@ -21,8 +21,9 @@ VBox HBox{
 
 Button{
 	-fx-font-size: 20px;
-	-fx-color: #D7D7D7;
-	-fx-effect: dropshadow(gaussian, #0b145b, 10, 0.5, 0, 0); 
+	-fx-text-fill: black;
+	-fx-color: rgba(78, 98, 109, 0.2);
+	-fx-font-weight: bold;
 }
 
 #confButton{
