@@ -19,6 +19,18 @@
 	-fx-background-color: #D18B47;
 }
 
+.chess-space-tournament-green{
+	-fx-background-color: #0b4809;
+}
+
+.chess-space-translucid-grey{
+	-fx-background-color: #D3D3D3; 
+}
+
+.chess-space-translucid-white{
+	-fx-background-color: #FFFFFF;
+}
+
 .chess-space-active {
 	-fx-background-color: red;
 }

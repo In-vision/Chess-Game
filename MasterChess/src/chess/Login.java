@@ -24,6 +24,7 @@ public class Login extends VBox{
 	public Image avat;
 	
 	public Login() {
+		
 		super();
 		
 		hb = new HBox();

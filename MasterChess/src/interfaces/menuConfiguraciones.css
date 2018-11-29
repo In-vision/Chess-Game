@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:700');
+VBox{
+	-fx-alignment: top-center;
+	-fx-background-image: url("backgroundchess.jpg");
+	-fx-background-size: cover;
+}
+
+VBox HBox{
+	-fx-alignment: center;
+}
+
+
+.label{
+	-fx-font-family: arial;
+	-fx-font-size: 20px;
+	-fx-font-weight: bold;
+	-fx-effect: dropshadow(gaussian, white, 30, 0.5, 0, 0);
+}
+
+#configuracionLabel{
+	-fx-text-alignment: center;
+	-fx-font-size: 70px;
+}
+
+
+Button{
+	-fx-font-size: 20px;
+	-fx-color: #D7D7D7;
+	-fx-effect: dropshadow(gaussian, #0b145b, 10, 0.5, 0, 0); 
+}
+
+#backButton{
+	-fx-graphic: url("back.png");
+}
+
+.selected{
+	-fx-color: #5b5454;
+	-fx-effect: dropshadow(gaussian, white, 10, 0.5, 0, 0); 
+}

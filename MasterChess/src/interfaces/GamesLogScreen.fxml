@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?language JavaScript?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.*?>
+
+<?import javafx.scene.layout.AnchorPane?>
+
+<VBox fx:id="root" xmlns:fx="http://javafx.com/fxml/1"
+xmlns="http://javafx.com/javafx/2.2" fx:controller="interfaces.FXMLController"  >
+	<children>
+	
+	<HBox fx:id="hBoxSave1" >
+		<children>
+			<Text fx:id="textSave1" text="Save 1">
+           <HBox.margin>
+                <Insets>
+                    <right>300</right>
+                </Insets>
+            </HBox.margin>
+			</Text>
+			<Button fx:id="buttonLoadSave1" ></Button>		
+			<Button fx:id="buttonDeleteSave1"	></Button>
+		</children>	
+	</HBox>
+		
+	<HBox fx:id="hBoxSave2" >
+		<children>
+			<Text fx:id="textSave2" text="Save 2">
+			<HBox.margin>
+                <Insets>
+                    <right>300</right>
+                </Insets>
+            </HBox.margin>
+            </Text>
+			<Button fx:id="buttonLoadSave2" ></Button>
+			<Button fx:id="buttonDeleteSave2"></Button>		
+		</children>	
+	</HBox>
+	
+	<HBox fx:id="hBoxSave3" >
+		<children>
+			<Text fx:id="textSave3" text="Save 3">
+			<HBox.margin>
+                <Insets>
+                    <right>300</right>
+                </Insets>
+            </HBox.margin>
+			</Text>
+			<Button fx:id="buttonLoadSave3"></Button> 
+			<Button fx:id="buttonDeleteSave3"></Button>
+		</children>
+	</HBox>
+	
+	<HBox fx:id="hBoxBackButton">
+		<children>
+			<Button fx:id="backButton"></Button>
+		</children>
+	</HBox>
+	</children>
+</VBox>
+

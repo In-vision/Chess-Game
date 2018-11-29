@@ -1,0 +1,42 @@
+
+VBox{
+	-fx-alignment: center;
+	-fx-background-image: url("backgroundchess.jpg");
+	-fx-background-size: cover;
+	-fx-padding: 12;
+	-fx-spacing: 10;
+}
+
+#hbox {
+	-fx-alignment: center;
+	-fx-background-color: #d7d7d7;
+    -fx-padding: 8;
+    -fx-spacing: 10;
+    -fx-background-radius: 5.0; 
+    -fx-effect: dropshadow(gaussian, gray, 8, 0.75, 0, 0); 
+    -fx-padding: 12;
+    -fx-spacing: 10;
+    
+    }
+    
+#hbox-back{
+	-fx-alignment: center-right;
+    -fx-padding: 8;
+    -fx-spacing: 10;
+}
+
+Button{
+	-fx-background-color: rgba(0,0,0,0);
+}
+
+Text{
+	-fx-text-alignment: center;
+	-fx-font-family: consolas;
+	-fx-font-size: 14px;
+	-fx-font-weight: bold;	
+}
+    
+
+
+
+

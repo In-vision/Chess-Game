@@ -3,6 +3,7 @@ package chess;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -21,6 +22,7 @@ public class ChessBoard extends GridPane {
 	public MoveList prevWhiteMoveList = null;
 	public MoveList prevBlackMoveList = null;
 	
+	public static boolean isPlayable;
 	public boolean pawnHasPromoted = false;
 	public boolean castled = false;
 	
@@ -32,6 +34,7 @@ public class ChessBoard extends GridPane {
 	public ArrayList<Space> whitePieces = new ArrayList<>();
 	public HashMap<String, Space> whitePieces2 = new HashMap<>();
 	public ArrayList<Space> blackPieces = new ArrayList<>();
+	private int langID = 0, voiceID = 0, themeID = 0;
 	
 	public  ArrayList<Space> piecesChecking = new ArrayList<>();
 	/** Sound effects **/
@@ -41,18 +44,18 @@ public class ChessBoard extends GridPane {
 	Media pallaMate = new Media(getClass().getResource("/soundEffects/PallaMate.mp3").toExternalForm());
 	MediaPlayer soundPlayer = new MediaPlayer(standardChessMove);
 	/**               **/
-	public ChessBoard(boolean colorPieces) {   
+	public ChessBoard(boolean colorPieces, int langID, int voiceID, int themeID) {   
 		super();  
+		this.langID = langID;
+		this.voiceID = voiceID;
+		this.themeID = themeID;
 		/*** Inicializar el tablero ***/
+		ChessBoard.isPlayable = true;
 		this.spaces = new Space[8][8];
 		for (int row = 0; row < 8; row++) {
 			for (int column = 0; column < 8; column++) {
 				boolean isLightSquare = ((row + column) % 2 != 0); //Controla colores de casillas
-				this.spaces[row][column] = new Space(isLightSquare, row, column);
-
-				this.spaces[row][column].prefWidthProperty().bind(this.widthProperty());	
-				this.spaces[row][column].prefHeightProperty().bind(this.heightProperty());
-
+				this.spaces[row][column] = new Space(isLightSquare, row, column, this.themeID);
 				/*
 				 * Si es blancas, a�ade al gridPane de manera que la esquina izquierda sea 0,0
 				 * Si es negras,  a�ade al gridPane de manera que la esquina izquierda sea 7,7
@@ -92,6 +95,8 @@ public class ChessBoard extends GridPane {
 
 	public void setLabelTurn(Label turn) {
 		this.turn = turn;
+		this.turn.setAlignment(Pos.CENTER);
+		this.turn.setStyle("-fx-font-weight: bold; -fx-font: 14 arial;");
 		if (ChessBoard.playerTurn) {
 			this.turn.setText("Blancas");
 		} else {
@@ -102,8 +107,12 @@ public class ChessBoard extends GridPane {
 	public void changePlayerStr() {
 		if (!ChessBoard.playerTurn) {
 			this.turn.setText("Negras");
+			this.turn.setStyle("-fx-text-fill: white; -fx-background-color: black; -fx-font-weight: bold; -fx-font: 14 arial;");
+			this.turn.setAlignment(Pos.CENTER);
 		} else {
 			this.turn.setText("Blancas");
+			this.turn.setStyle("-fx-text-fill: black; -fx-background-color: white; -fx-font-weight: bold; -fx-font: 14 arial;");
+			this.turn.setAlignment(Pos.CENTER);
 		}
 
 	}
@@ -124,7 +133,6 @@ public class ChessBoard extends GridPane {
 	public void initialPos() {
 		/*	Piezas blancas	*/
 		this.spaces[0][0].setPiece(new Rook(true));
-//		this.spaces[0][0].getPiece().getImage().
 		this.spaces[1][0].setPiece(new Knight(true));
 		this.spaces[2][0].setPiece(new Bishop(true));
 		this.spaces[3][0].setPiece(new Queen(true));
@@ -187,11 +195,11 @@ public class ChessBoard extends GridPane {
 	}
 
 	public void clickOnSquare(Space selectedSquare) {
-		System.out.println("["+selectedSquare.getX()+"]["+selectedSquare.getY()+
+		System.out.println("["+selectedSquare.getX()+"]["+selectedSquare.getY() +
 				"] threat by white: "+selectedSquare.isThreatenedByWhite() + " - " + selectedSquare.getWhiteThreads());
 		System.out.println("       threat by black: "+selectedSquare.isThreatenedByBlack()  + " - " + selectedSquare.getBlackThreads());
 		int x = selectedSquare.getX(), y = selectedSquare.getY();
-		if(this.checkmate) return;
+		if(this.checkmate || ChessBoard.isPlayable == false) return;
 		// Si una pieza ha sido seleccionada y no se selecciono en otra pieza del mismo color
 		if (this.activeSquare != null
 			&& selectedSquare.getPieceColor() != this.activeSquare.getPieceColor()) {
@@ -264,7 +272,6 @@ public class ChessBoard extends GridPane {
 			Piece movedPiece = oldSquare.releasePiece();
 			Piece previousTakenPiece = null;
 			threadSwitch(movedPiece, oldSquare, false, false); //Quitar casillas que la pieza amenazaba
-			System.out.println("hi1 " + spaces[3][3].getBlackThreads());
 			if(this.pawnHasPromoted && ChessBoard.playerTurn) {
 				previousTakenPiece = newSquare.releasePiece();
 				newSquare.setPiece(new Queen(true));
@@ -325,21 +332,6 @@ public class ChessBoard extends GridPane {
 			}
 			if(this.checkmate) System.out.println("Checkmated");
 			soundEffectHandler();
-//			for(int i = 7; i >= 0; i--) {
-//				for(int j = 0; j <= 7; j++) {
-//					Space a = spaces[j][i];
-//					System.out.print(a.toString() + ":" + a.getWhiteThreads() + " ");
-//				}
-//				System.out.println();
-//			}
-//			System.out.println();
-//			for(int i = 7; i >= 0; i--) {
-//				for(int j = 0; j <= 7; j++) {
-//					Space a = spaces[j][i];
-//					System.out.print(a.toString() + ":" +a.getBlackThreads() + " ");
-//				}
-//				System.out.println();
-//			}
 			return true;
 		} else { //Si no cumple nada mas, significa que no fue jugada valida
 			return false;
@@ -819,7 +811,6 @@ public class ChessBoard extends GridPane {
 				}
 			}
 			if(pieceInTheMiddle) return;
-			System.out.println(tmp.toString() + " " + newSquare.toString() + " diagonal1 ");
 			if(minX == newSquare.getX()) {
 				for(int i = minX - 1, j = minY - 1; i >= 0 && j >= 0; i--, j--) {
 					spaces[i][j].threadHandlerAndChecker(false, blackOrWhite);
@@ -846,7 +837,6 @@ public class ChessBoard extends GridPane {
 				}
 			}
 			if(pieceInTheMiddle) return;
-			System.out.println(tmp.toString() + " " + newSquare.toString() + " diagonal2 ");
 			if(minX == newSquare.getX()) {
 				for(int i = minX + 1, j = minY - 1; i <= 7 && j >= 0; i++, j--) {
 					spaces[i][j].threadHandlerAndChecker(false, blackOrWhite);
@@ -868,10 +858,8 @@ public class ChessBoard extends GridPane {
 		if(tmp.getX() == newSquare.getX() && oldSquare.getX() != newSquare.getX()) {
 			min = (tmp.getY() > newSquare.getY())? newSquare.getY() : tmp.getY();
 			max = (tmp.getY() > newSquare.getY())? tmp.getY() : newSquare.getY();
-			System.out.println("min: " + min  + " max: " + max );
 			for(int i = min + 1; i < max; i++) {
 				if(spaces[tmp.getX()][i].isOccupied()) {
-					System.out.println("isOccupied");
 					pieceInTheMiddle = true;
 					break;
 				}
@@ -919,7 +907,6 @@ public class ChessBoard extends GridPane {
 	}
 	private boolean threadSwitch(Piece piece, Space square, boolean giveOrTake, boolean capturedPiece) {
 		boolean check = false;
-		System.out.println(square.toString() + " " + piece.getName());
 		switch(piece.getName()){
 		case "pawn":
 			check = pawnChecker(square.getX(), square.getY(), giveOrTake, capturedPiece);
@@ -1211,7 +1198,6 @@ public class ChessBoard extends GridPane {
 						return false;
 					}
 					if(kingInCheckValidator(p) == false) {
-//						System.out.println("King cant move there while in check");
 						return false;
 					}
 					if(castleCheck(p, m) == false) {
@@ -1258,21 +1244,18 @@ public class ChessBoard extends GridPane {
 			if(tmp.getPiece().getName().equals("rook")) {
 				kingSafe = rookAttacksKing(king, tmp, p);
 				if(!kingSafe) {
-					System.out.println(tmp + " - " + spaces[p.oldX][p.oldY]);
 					return false;
 				}
 			}
 			else if(tmp.getPiece().getName().equals("bishop")){
 				kingSafe = bishopAttacksKing(king, tmp, p);
 				if(!kingSafe) {
-					System.out.println(tmp + " - " + spaces[p.oldX][p.oldY]);
 					return false;
 				}
 			}
 			else if(tmp.getPiece().getName().equals("queen")) {
 				kingSafe = rookAttacksKing(king, tmp, p) && bishopAttacksKing(king, tmp, p);
 				if(!kingSafe) {
-					System.out.println(tmp + " - " + spaces[p.oldX][p.oldY]);
 					return false;
 				}
 			}
@@ -1675,26 +1658,7 @@ public class ChessBoard extends GridPane {
 		}
 
 		return true;
-	}
-
-//	private void disablePieces(boolean playerTurn) {
-//		for (int i = 0; i < 8; i++) {
-//			for (int j = 0; j < 8; j++) {
-//				if (spaces[i][j].isOccupied()) {
-//					if (playerTurn && spaces[i][j].getPieceColor() == "white")
-//						spaces[i][j].setDisable(true);
-//					else if(playerTurn && spaces[i][j].getPieceColor() == "black")
-//						spaces[i][j].setDisable(false);
-//					else if (!playerTurn && spaces[i][j].getPieceColor() == "black")
-//						spaces[i][j].setDisable(true);
-//					else
-//						spaces[i][j].setDisable(false);
-//				}
-//			}
-//		}
-//	}
-
-	
+	}	
 
 }
 

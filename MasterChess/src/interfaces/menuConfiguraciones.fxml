@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?language JavaScript?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+
+<VBox fx:id="root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+	<children>
+		<Label fx:id="configuracionLabel" text="Configuration">
+			<VBox.margin>
+				<Insets top="60" left="0" bottom="40" right="0"/>
+			</VBox.margin>
+		</Label>
+		
+		<Label fx:id="voiceLabel" text="Choose the voice in-game:"></Label>
+		<HBox fx:id="voiceHBox">
+			<children>
+				<Button fx:id="default1" text="Pallacrack" prefWidth="150">
+					<HBox.margin>
+						<Insets top="0" left="30" bottom="0" right="30"/>
+					</HBox.margin>
+				</Button>
+				<Button fx:id="v2" text="Isaac" prefWidth="150">
+					<HBox.margin>
+						<Insets top="0" left="30" bottom="0" right="30"/>
+					</HBox.margin>
+				</Button>
+				<Button fx:id="v3" text="El Chino Antrax" prefWidth="120">
+					<HBox.margin>
+						<Insets top="0" left="30" bottom="0" right="30"/>
+					</HBox.margin>
+				</Button>
+			</children>
+			<VBox.margin>
+				<Insets top="15" left="0" bottom="30" right="0"/>
+			</VBox.margin>
+		</HBox>
+		
+		<Label fx:id="themeLabel" text="Choose the color of the board:"></Label>
+		<HBox fx:id="themeHBox">
+			<children>
+				<Button fx:id="default2" text="Brown" prefWidth="150">
+					<HBox.margin>
+						<Insets top="0" left="30" bottom="0" right="30"/>
+					</HBox.margin>
+				</Button>
+				<Button fx:id="theme2" text="Tournament" prefWidth="150">
+					<HBox.margin>
+						<Insets top="0" left="30" bottom="0" right="30"/>
+					</HBox.margin>
+				</Button>
+				<Button fx:id="theme3" text="Translucid" prefWidth="150">
+					<HBox.margin>
+						<Insets top="0" left="30" bottom="0" right="30"/>
+					</HBox.margin>
+				</Button>
+				
+				<VBox fx:id = "preview">
+				<Label fx:id = "previewText" text = "Preview:"></Label>
+				<ImageView fx:id="boardImage" 
+           			 disable="false" 
+            		 fitHeight="150.0" fitWidth="200.0"
+            		 layoutX="0" layoutY="0" 
+            		 pickOnBounds="true" 
+            		 preserveRatio="true" />
+				</VBox>
+			</children>
+			<VBox.margin>
+				<Insets top="15" left="0" bottom="15" right="0"/>
+			</VBox.margin>
+		</HBox>
+		<Button fx:id="backButton">
+			<VBox.margin>
+				<Insets top="5" left="950" bottom="0" right="0"/>
+			</VBox.margin>
+		</Button>
+	</children>
+</VBox>
+

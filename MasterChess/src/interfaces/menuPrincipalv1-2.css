@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:700');
+
+VBox{
+	-fx-alignment: top-center;
+	-fx-background-image: url("backgroundchess.jpg");
+	-fx-background-size: cover;
+}
+
+VBox HBox{
+	-fx-alignment: center;
+}
+
+#turistaMundialLabel{
+	-fx-text-alignment: center;
+	-fx-font-family: Roboto;
+	-fx-font-size: 70px;
+	-fx-font-weight: bold;
+	-fx-effect: dropshadow(gaussian, white, 30, 0.5, 0, 0); 
+}
+
+
+Button{
+	-fx-font-size: 20px;
+	-fx-color: #D7D7D7;
+	-fx-effect: dropshadow(gaussian, #0b145b, 10, 0.5, 0, 0); 
+}
+
+#confButton{
+	-fx-graphic: url("settings.png");
+}

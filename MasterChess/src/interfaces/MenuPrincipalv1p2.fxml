@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?language JavaScript?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+
+<VBox fx:id="root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+	<children>
+		<Label fx:id="turistaMundialLabel" text="CHESS">
+			<VBox.margin>
+				<Insets top="60" left="0" bottom="90" right="0"/>
+			</VBox.margin>
+		</Label>
+		
+		<Button fx:id="singlePlayerButton" text="SinglePlayer" prefWidth="500">
+			<VBox.margin>
+				<Insets top="0" left="0" bottom="30" right="0"/>
+			</VBox.margin>
+		</Button>
+		
+		<Button fx:id="exitButton" text="Exit" prefWidth="500">
+			<VBox.margin>
+				<Insets top="0" left="0" bottom="20" right="0"/>
+			</VBox.margin>
+		</Button>
+		<Button fx:id="confButton" text="">
+			<VBox.margin>
+				<Insets top="200" left="950" bottom="0" right="0"/>
+			</VBox.margin>
+		</Button>
+	</children>
+</VBox>
