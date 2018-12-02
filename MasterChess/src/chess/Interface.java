@@ -70,9 +70,13 @@ public class Interface extends Application {
 	private int gameID = 0;
 
 	private String userName;
+	private Locale mx = new Locale("es", "MX");
+	private Locale it = new Locale("it", "IT");
 
 	@Override
 	public void start(Stage mainStage) throws IOException {
+		I18N.setSupportedLocales(Locale.ENGLISH, mx, it);
+		I18N.setResourceBundlePath("res.messages");
 		stage = mainStage;
 		stage.setTitle("Chess Game");
 
@@ -232,17 +236,7 @@ public class Interface extends Application {
 		mainStage.show();
 	}
 
-	private Locale mx = new Locale("es", "MX");
-	private Locale it = new Locale("it", "IT");
-	Label p1 = I18N.labelForKey("player1");
-	Label p2 = I18N.labelForKey("player2");
-
-	@Override
-	public void init() {
-		I18N.setSupportedLocales(Locale.ENGLISH, mx, it);
-		I18N.setResourceBundlePath("res.messages");
-	}
-
+	
 	private void initBoardScene(Stage mainStage, boolean isNewGame, int calledFrom) throws SQLException {
 
 		if (isNewGame) {
@@ -332,6 +326,8 @@ public class Interface extends Application {
 		nestedBP.setBottom(letters);
 
 		VBox players = new VBox();
+		Label p1 = I18N.labelForKey("player1");
+		Label p2 = I18N.labelForKey("player2");
 		Label vs;
 		vs = new Label("VS");
 		resultP1 = new Label("-");
