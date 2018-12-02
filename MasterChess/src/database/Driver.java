@@ -4,23 +4,24 @@ import java.sql.*;
 
 public class Driver {
 
-	final String CONN = "jdbc:mysql://localhost:3306/chess?useTimezone=true&serverTimezone=GMT";
+	final String CONN = "jdbc:mysql://localhost:3306/masterchess?useTimezone=true&serverTimezone=GMT";
 	public Connection masterChessConn;
 	public Statement masterChessStatement;
 	public PreparedStatement mcPS;
 
-	private final String insertPlayer = "insert into chess.users (USER_ID, USERNAME, PASSWORD, EMAIL) "
+	private final String insertPlayer = "insert into masterchess.users (USER_ID, USERNAME, PASSWORD, EMAIL) "
 			+ "values (?, ?, ?, ?)";
-	private final String selectUserID = "select USER_ID FROM chess.users WHERE USERNAME = ?";
-	private final String selectGamesFromUser = "select count(GAME_ID) FROM chess.GAMES WHERE USER_ID = ?";
-	private final String insertGame = "insert into chess.games (GAME_ID, USER_ID, GAME_PATH) VALUES (?, ?, ?)";
+	private final String selectUserID = "select USER_ID FROM masterchess.users WHERE USERNAME = ?";
+	private final String selectGamesFromUser = "select count(GAME_ID) FROM masterchess.GAMES WHERE USER_ID = ?";
+	private final String insertGame = "insert into masterchess.games (GAME_ID, USER_ID, GAME_PATH) VALUES (?, ?, ?)";
 
 	public Driver() {
 		try {
 			// Load Driver to get a Connection
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			// Get a connection
-			masterChessConn = DriverManager.getConnection(CONN, "root", "Life28begins1776");
+			//                                                  "Isaac", "Pandita2357"
+			masterChessConn = DriverManager.getConnection(CONN, "Isaac", "Pandita2357");
 			// Create Statement
 			masterChessStatement = masterChessConn.createStatement();
 		} catch (Exception e) {
@@ -29,12 +30,12 @@ public class Driver {
 	}
 
 	public ResultSet selectAllUsers() throws SQLException {
-		ResultSet rs = masterChessStatement.executeQuery("Select * from chess.users;");
+		ResultSet rs = masterChessStatement.executeQuery("Select * from masterchess.users;");
 		return rs;
 	}
 
 	public ResultSet selectAllGames() throws SQLException {
-		ResultSet rs = masterChessStatement.executeQuery("Select * from chess.games");
+		ResultSet rs = masterChessStatement.executeQuery("Select * from masterchess.games");
 		return rs;
 	}
 
@@ -67,7 +68,7 @@ public class Driver {
 	}
 
 	private int selectMaxPlayerID() throws SQLException {
-		ResultSet rs = masterChessStatement.executeQuery("Select max(USER_ID) from chess.users");
+		ResultSet rs = masterChessStatement.executeQuery("Select max(USER_ID) from masterchess.users");
 		int maxID = 0;
 		if (rs.next()) {
 			maxID = rs.getInt(1);

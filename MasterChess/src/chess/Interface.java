@@ -72,11 +72,16 @@ public class Interface extends Application {
 	private String userName;
 	private Locale mx = new Locale("es", "MX");
 	private Locale it = new Locale("it", "IT");
+	
+	@Override
+	public void init() throws Exception {
+		I18N.setSupportedLocales(Locale.ENGLISH, mx, it);
+		I18N.setResourceBundlePath("res.messages");
+	}
 
 	@Override
 	public void start(Stage mainStage) throws IOException {
-		I18N.setSupportedLocales(Locale.ENGLISH, mx, it);
-		I18N.setResourceBundlePath("res.messages");
+
 		stage = mainStage;
 		stage.setTitle("Chess Game");
 
@@ -362,6 +367,7 @@ public class Interface extends Application {
 		});
 		italian.setOnAction(e -> {
 			I18N.setLocale(it);
+			System.out.println(I18N.getMessage("player1"));
 		});
 		english.setOnAction(e -> {
 			I18N.setLocale(new Locale("en"));

@@ -70,7 +70,7 @@ public final class I18N {
 	}
 
 	public static void setLocale(Locale locale) {
-		Locale.setDefault(locale);
+		localeProperty().set(locale);
 	}
 
 	public static ObjectProperty<Locale> localeProperty() {
