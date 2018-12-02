@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Stream;
 
-import database.Driver;
+import i18n.I18N;
+//import database.Driver;
 import interfaces.Configuraciones;
 import interfaces.GamesLog;
 import interfaces.MenuPrincipal;
@@ -23,6 +23,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -40,6 +41,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 public class Interface extends Application {
+	
 	public static void main(String[] args) {
 		// Automatic VM reset, thanks to Joseph Rachmuth.
 		try {
@@ -52,7 +54,7 @@ public class Interface extends Application {
 		}
 	}
 
-	private Driver mcDriver;
+//	private Driver mcDriver;
 	private String playerTurnStr;
 	private ChessBoard board;
 	private Login login;
@@ -91,7 +93,7 @@ public class Interface extends Application {
 		login = new Login();
 		signup = new Signup();
 		mainMenu = new MenuPrincipal();
-		mcDriver = new Driver();
+//		mcDriver = new Driver();
 		gameLogs = new GamesLog();
 		config = new Configuraciones();
 
@@ -112,16 +114,16 @@ public class Interface extends Application {
 		
 		confButtonsFunctionality();
 		
-		login.signup.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> initSignupScene(stage, signup));
-		
-		signup.signup.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-			try {
-				insertPlayer();
-				initMainMenu(stage, mainMenu, 2);
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-		});
+//		login.signup.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> initSignupScene(stage, signup));
+//		
+//		signup.signup.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+//			try {
+//				insertPlayer();
+//				initMainMenu(stage, mainMenu, 2);
+//			} catch (SQLException e1) {
+//				e1.printStackTrace();
+//			}
+//		});
 
 		signup.backButt.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
 			initLogin(stage, login);
@@ -133,47 +135,44 @@ public class Interface extends Application {
 
 	private void initMainMenu(Stage mainStage, MenuPrincipal mainMenu, int requestCode) throws SQLException {
 		boolean areValidCredentials = true;
-		if (requestCode == 1) {
-			ResultSet rs = null;
-			areValidCredentials = false;
-			String userNorMail = login.username.getText();
-			String lPassword = login.password.getText();
-			
-			System.out.println("Credentials: ");
-			System.out.println("User: " + userNorMail);
-			System.out.println("Password: " + lPassword);
-
-			rs = mcDriver.selectAllUsers();
-
-			if (rs == null) {
-				System.out.println("A problem has occurred during the connection");
-			} else {
-				String username, password, email;
-				while (rs.next()) {
-					username = rs.getString(2);
-					password = rs.getString(3);
-					email = rs.getString(4);
-
-					System.out.println("Username: " + username + ", Password: " + password + ", Email: " + email);
-
-					if ((userNorMail.equals(username) || userNorMail.equals(email)) && (lPassword.equals(password))) {
-						System.out.println("Valid user");
-						areValidCredentials = true;
-						this.userName = username;
-						break;
-					}
-				}
-			}
-
-		}
+//		if (requestCode == 1) {
+//			ResultSet rs = null;
+//			areValidCredentials = true;
+//			String userNorMail = login.username.getText();
+//			String lPassword = login.password.getText();
+//			
+//			System.out.println("Credentials: ");
+//			System.out.println("User: " + userNorMail);
+//			System.out.println("Password: " + lPassword);
+//
+//			rs = mcDriver.selectAllUsers();
+//
+//			if (rs == null) {
+//				System.out.println("A problem has occurred during the connection");
+//			} else {
+//				String username, password, email;
+//				while (rs.next()) {
+//					username = rs.getString(2);
+//					password = rs.getString(3);
+//					email = rs.getString(4);
+//
+//					System.out.println("Username: " + username + ", Password: " + password + ", Email: " + email);
+//
+//					if ((userNorMail.equals(username) || userNorMail.equals(email)) && (lPassword.equals(password))) {
+//						System.out.println("Valid user");
+//						areValidCredentials = true;
+//						this.userName = username;
+//						break;
+//					}
+//				}
+//			}
+//
+//		}
 		
-		System.out.println("init mainMenu");
-		System.out.println(areValidCredentials);
 		BorderPane root = new BorderPane();
 		root.setCenter(mainMenu);
 		Scene mainMenuScene = new Scene(root);
 		mainMenuScene.getStylesheets().add("/interfaces/menuPrincipalv1-2.css");
-		System.out.println("show");
 		
 		if (areValidCredentials && requestCode == 1) {
 			mainStage.setScene(mainMenuScene);
@@ -190,19 +189,15 @@ public class Interface extends Application {
 	}
 	
 	private void initGameLogs(Stage mainStage, GamesLog gamelogs) {
-		System.out.println("init GameLogs Screen");
 		BorderPane root = new BorderPane();
 		root.setCenter(gamelogs);
 		Scene mainMenuScene = new Scene(root);
 		mainMenuScene.getStylesheets().add("/interfaces/gameslog.css");
-		mainStage.setScene(mainMenuScene);
-		System.out.println("show");
-		
+		mainStage.setScene(mainMenuScene);	
 		mainStage.show();
 	}
 
 	private void initConfig(Stage mainStage, Configuraciones conf) {
-		System.out.println("init menu of configuration");
 		BorderPane root = new BorderPane();
 		root.setCenter(conf);
 		Scene confMenu = new Scene(root);
@@ -212,7 +207,6 @@ public class Interface extends Application {
 	}
 
 	private void initLogin(Stage mainStage, Login login) {
-		System.out.println("init login");
 		BorderPane root = new BorderPane();
 		root.setCenter(login);
 		Scene loginScene = new Scene(root);
@@ -222,26 +216,37 @@ public class Interface extends Application {
 
 	}
 
-	private void insertPlayer() throws SQLException {
-		String username = signup.username.getText();
-		String email = signup.email.getText();
-		String password = signup.password.getText();
-		System.out.println(username + ", " + password + ", " + email);
-		mcDriver.insertPlayer(username, email, password);
+//	private void insertPlayer() throws SQLException {
+//		String username = signup.username.getText();
+//		String email = signup.email.getText();
+//		String password = signup.password.getText();
+//		System.out.println(username + ", " + password + ", " + email);
+//		mcDriver.insertPlayer(username, email, password);
+//
+//	}
 
+//	private void initSignupScene(Stage mainStage, Signup signup) {
+//		BorderPane root = new BorderPane();
+//		root.setCenter(signup);
+//		Scene signupScene = new Scene(root);
+//		signupScene.getStylesheets().add("/res/stylesheet.css");
+//		mainStage.setScene(signupScene);
+//		mainStage.show();
+//	}
+	
+	private Locale mx = new Locale("es", "MX");
+	private Locale it = new Locale("it", "IT");
+	Label p1 = I18N.labelForKey("player1");
+	Label p2 = I18N.labelForKey("player2");
+	
+	@Override
+	public void init() {
+		I18N.setSupportedLocales(Locale.ENGLISH, mx, it);
+		I18N.setResourceBundlePath("res.messages");
 	}
-
-	private void initSignupScene(Stage mainStage, Signup signup) {
-		BorderPane root = new BorderPane();
-		root.setCenter(signup);
-		Scene signupScene = new Scene(root);
-		signupScene.getStylesheets().add("/res/stylesheet.css");
-		mainStage.setScene(signupScene);
-		mainStage.show();
-	}
-
+	
 	private void initBoardScene(Stage mainStage, boolean isNewGame, int calledFrom) throws SQLException {
-		System.out.println("Init board scene");
+		
 		if(isNewGame) {
 			board = new ChessBoard(playerIsWhite, this.langID, this.voiceID, this.themeID, isNewGame);
 		}
@@ -331,9 +336,7 @@ public class Interface extends Application {
 		nestedBP.setBottom(letters);
 
 		VBox players = new VBox();
-		Label p1, p2, vs;
-		p1 = new Label("Player 1");
-		p2 = new Label("Player 2");
+		Label vs;
 		vs = new Label("VS");
 		resultP1 = new Label("-");
 		resultP2 = new Label("-");
@@ -358,12 +361,20 @@ public class Interface extends Application {
 		playerTurn.maxWidth(580);
 		MenuBar menuBar = generateMenuBar();
 		HBox menuCombo = new HBox();
-		ObservableList<String> options = FXCollections.observableArrayList("Spanish", "English", "French");
-
-		ComboBox<String> languages = new ComboBox<>(options);
-		languages.setPromptText("Select a language");
-
-		menuCombo.getChildren().addAll(menuBar, languages);
+		Button spanish = I18N.buttonForKey("spanish");
+		Button italian = I18N.buttonForKey("italian");
+		Button english = I18N.buttonForKey("english");
+		
+		spanish.setOnAction(e -> {
+			I18N.setLocale(mx);
+		});
+		italian.setOnAction(e -> {
+			I18N.setLocale(it);
+		});
+		english.setOnAction(e -> {
+			I18N.setLocale(new Locale("en"));
+		});
+		menuCombo.getChildren().addAll(menuBar, english, spanish, italian);
 		menuCombo.getStyleClass().add("combob");
 		board.prefWidthProperty().bind(rootTmp.widthProperty());
 		board.prefHeightProperty().bind(rootTmp.heightProperty());
@@ -380,8 +391,20 @@ public class Interface extends Application {
 		Scene boardScene = new Scene(rootTmp, 580, 480);
 		boardScene.getStylesheets().add("/res/stylesheet.css");
 		mainStage.setScene(boardScene);
+		mainStage.titleProperty().bind(I18N.createStringBinding("title"));
 		mainStage.show();
 
+	}
+	
+	private Locale getLocale(int selectedIndex) {
+		switch(selectedIndex) {
+			case 0:;
+				return mx;
+		case 2:
+				return it;
+		default:
+				return new Locale("en");
+		}
 	}
 
 	public void changePlayerStr() {
@@ -445,95 +468,95 @@ public class Interface extends Application {
 	
 	public void onDisplayFullDatabase() {
 		Alert infoAlert = new Alert(AlertType.INFORMATION);
-		infoAlert.setTitle("Database FULL");
+		infoAlert.setTitle(I18N.getMessage("databaseFull"));
 		infoAlert.setHeaderText(null);
 
 		// Set window icon
 		Stage alertStage = (Stage) infoAlert.getDialogPane().getScene().getWindow();
 		alertStage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/about.png")));
 
-		infoAlert.setContentText("You've used your three save slots. Please feel free to pay for more!\n");
+		infoAlert.setContentText(I18N.getMessage("contextText"));
 		infoAlert.showAndWait();
 	}
 	
-	private void saveGame() throws IOException, SQLException {
-		String[] savedFileStrings = new String[66];
-		int lineCounter = 0, count = 0;
-		String turn = (ChessBoard.playerTurn)? "true" : "false";
-		savedFileStrings[lineCounter] = turn;
-		lineCounter++;
-		savedFileStrings[lineCounter] = String.valueOf(board.kingInCheck);
-		lineCounter++;
-		String x, y, isThreatenedByWhite, isThreatenedByBlack,whiteThreads, blackThreads,piece, color;
-		for (int row = 0; row < 8; row++) {
-			for (int column = 0; column < 8; column++) {
-				Space temp = ChessBoard.spaces[row][column];
-				x = String.valueOf(temp.getX());
-				y = String.valueOf(temp.getY());
-				isThreatenedByWhite = String.valueOf(temp.isThreatenedByWhite());
-				isThreatenedByBlack = String.valueOf(temp.isThreatenedByBlack());
-				whiteThreads = String.valueOf(temp.getWhiteThreads());
-				blackThreads = String.valueOf(temp.getBlackThreads());
-				piece = (temp.getPiece() == null)? null : temp.getPiece().getName();
-				color = (piece == null)? null: temp.getPieceColor();
-				if(piece != null) count++;
-				String concat = x + "," + y + "," + isThreatenedByWhite + "," +
-						isThreatenedByBlack+","+whiteThreads+","+blackThreads+","+piece+","+color;
-				savedFileStrings[lineCounter] = concat;
-				lineCounter++;
-//				System.out.println(concat);
-				
-			}
-		}
-		System.out.println("hola : " + userName);
-		int userID = mcDriver.selectUserID(userName);
-		int noGames = mcDriver.selectGamesFromUser(userID);
-		if(noGames == 3) {
-			onDisplayFullDatabase();
-			return;
-		}
-		int gameID = noGames + 1;
-		System.out.println("Save game: " + userID + ", " + noGames);
-		String fileName = userName + gameID + ".txt";
-		System.out.println(fileName);
-		Path myPath = Paths.get(fileName);
-		Files.write(myPath, Arrays.asList(savedFileStrings));
-		
-		mcDriver.insertGamePath(gameID, userID, fileName);
-//		System.out.println("Reading file...");
-//		List<String> taqlo = Files.readAllLines(myPath);
-//		for(String aa: taqlo) {
-//			System.out.println(aa);
+//	private void saveGame() throws IOException, SQLException {
+//		String[] savedFileStrings = new String[66];
+//		int lineCounter = 0, count = 0;
+//		String turn = (ChessBoard.playerTurn)? "true" : "false";
+//		savedFileStrings[lineCounter] = turn;
+//		lineCounter++;
+//		savedFileStrings[lineCounter] = String.valueOf(board.kingInCheck);
+//		lineCounter++;
+//		String x, y, isThreatenedByWhite, isThreatenedByBlack,whiteThreads, blackThreads,piece, color;
+//		for (int row = 0; row < 8; row++) {
+//			for (int column = 0; column < 8; column++) {
+//				Space temp = ChessBoard.spaces[row][column];
+//				x = String.valueOf(temp.getX());
+//				y = String.valueOf(temp.getY());
+//				isThreatenedByWhite = String.valueOf(temp.isThreatenedByWhite());
+//				isThreatenedByBlack = String.valueOf(temp.isThreatenedByBlack());
+//				whiteThreads = String.valueOf(temp.getWhiteThreads());
+//				blackThreads = String.valueOf(temp.getBlackThreads());
+//				piece = (temp.getPiece() == null)? null : temp.getPiece().getName();
+//				color = (piece == null)? null: temp.getPieceColor();
+//				if(piece != null) count++;
+//				String concat = x + "," + y + "," + isThreatenedByWhite + "," +
+//						isThreatenedByBlack+","+whiteThreads+","+blackThreads+","+piece+","+color;
+//				savedFileStrings[lineCounter] = concat;
+//				lineCounter++;
+////				System.out.println(concat);
+//				
+//			}
 //		}
-	}
+//		System.out.println("hola : " + userName);
+//		int userID = mcDriver.selectUserID(userName);
+//		int noGames = mcDriver.selectGamesFromUser(userID);
+//		if(noGames == 3) {
+//			onDisplayFullDatabase();
+//			return;
+//		}
+//		int gameID = noGames + 1;
+//		System.out.println("Save game: " + userID + ", " + noGames);
+//		String fileName = userName + gameID + ".txt";
+//		System.out.println(fileName);
+//		Path myPath = Paths.get(fileName);
+//		Files.write(myPath, Arrays.asList(savedFileStrings));
+//		
+//		mcDriver.insertGamePath(gameID, userID, fileName);
+////		System.out.println("Reading file...");
+////		List<String> taqlo = Files.readAllLines(myPath);
+////		for(String aa: taqlo) {
+////			System.out.println(aa);
+////		}
+//	}
 	
 	// Generate main menu bar
 	private MenuBar generateMenuBar() {
 		MenuBar menuBar = new MenuBar();
 
-		Menu exitMenu = new Menu("Exit");
-		MenuItem menuItemQuit = new MenuItem("Quit");
-		MenuItem menuItemSignout = new MenuItem("Sign out");
-		MenuItem menuItemSave = new MenuItem("Save and Quit");
+		Menu exitMenu = new Menu(I18N.getMessage("exit"));
+		MenuItem menuItemQuit = new MenuItem(I18N.getMessage("quit"));
+		MenuItem menuItemSignout = new MenuItem(I18N.getMessage("signOut"));
+		MenuItem menuItemSave = new MenuItem(I18N.getMessage("save&Quit"));
 		menuItemQuit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
 		menuItemSignout.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN));
 		menuItemSave.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
 		menuItemQuit.setOnAction(e -> onQuit());
-		menuItemSignout.setOnAction(e -> initLogin(stage, login));
-		menuItemSave.setOnAction(e -> {
-			try {
-				saveGame();
-			} catch (IOException | SQLException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
-		});
+//		menuItemSignout.setOnAction(e -> initLogin(stage, login));
+//		menuItemSave.setOnAction(e -> {
+//			try {
+//				saveGame();
+//			} catch (IOException | SQLException e2) {
+//				// TODO Auto-generated catch block
+//				e2.printStackTrace();
+//			}
+//		});
 		exitMenu.getItems().addAll(menuItemQuit, menuItemSignout, menuItemSave);
 
-		Menu gameMenu = new Menu("Game");
-		MenuItem menuItemDraw = new MenuItem("Draw");
-		MenuItem menuItemResign = new MenuItem("Resign");
-		MenuItem menuItemReset = new MenuItem("Reset");
+		Menu gameMenu = new Menu(I18N.getMessage("game"));
+		MenuItem menuItemDraw = new MenuItem(I18N.getMessage("draw"));
+		MenuItem menuItemResign = new MenuItem(I18N.getMessage("resign"));
+		MenuItem menuItemReset = new MenuItem(I18N.getMessage("reset"));
 		menuItemDraw.setAccelerator(new KeyCodeCombination(KeyCode.D, KeyCombination.CONTROL_DOWN));
 		menuItemDraw.setOnAction(e -> setDraw());
 		menuItemResign.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
@@ -549,8 +572,8 @@ public class Interface extends Application {
 		});
 		gameMenu.getItems().addAll(menuItemDraw, menuItemResign, menuItemReset);
 
-		Menu menuHelp = new Menu("Help");
-		MenuItem menuItemAbout = new MenuItem("About");
+		Menu menuHelp = new Menu(I18N.getMessage("help"));
+		MenuItem menuItemAbout = new MenuItem(I18N.getMessage("about"));
 		menuItemAbout.setAccelerator(new KeyCodeCombination(KeyCode.F1));
 		menuItemAbout.setOnAction(e -> onDisplayAbout());
 		menuHelp.getItems().add(menuItemAbout);
