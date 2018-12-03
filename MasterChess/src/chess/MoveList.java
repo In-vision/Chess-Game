@@ -12,17 +12,7 @@ public enum MoveList {
 	private int x;
 	private int y;
 	
-	private void a() {
-		MoveList tmp;
-		for(MoveList move : MoveList.values()) {
-			if(move.isEqual(2, 3)) {
-				tmp = move;
-				break;
-			}
-			
-		}
-	}
-	
+
 	private void setX(int x) {
 		this.x = x;
 	}

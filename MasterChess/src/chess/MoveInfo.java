@@ -1,8 +1,6 @@
 package chess;
 
-import java.io.Serializable;
-
-public class MoveInfo implements Serializable {
+public class MoveInfo{
 	int oldX;
 	int newX;
 	int oldY;

@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import database.Driver;
@@ -114,10 +115,13 @@ public class Interface extends Application {
 		
 		login.signup.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> initSignupScene(stage, signup));
 		
+
+		
 		signup.signup.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
 			try {
-				insertPlayer();
-				initMainMenu(stage, mainMenu, 2);
+				boolean isValidPlayer = insertPlayer();
+				if(isValidPlayer == true)initMainMenu(stage, mainMenu, 2);
+				else onDisplayInvalidUser();
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
@@ -131,6 +135,18 @@ public class Interface extends Application {
 		stage.show();
 	}
 
+	public void onDisplayInvalidUser() {
+		Alert infoAlert = new Alert(AlertType.ERROR);
+		infoAlert.setTitle("Signup Denied");
+		infoAlert.setHeaderText(null);
+
+		// set window icon
+		Stage alertStage = (Stage) infoAlert.getDialogPane().getScene().getWindow();
+		alertStage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/about.png")));
+		infoAlert.setContentText("Username, password or Email invalid. \n");
+		infoAlert.showAndWait();
+	}
+	
 	private void initMainMenu(Stage mainStage, MenuPrincipal mainMenu, int requestCode) throws SQLException {
 		boolean areValidCredentials = true;
 		if (requestCode == 1) {
@@ -222,13 +238,17 @@ public class Interface extends Application {
 
 	}
 
-	private void insertPlayer() throws SQLException {
+	private boolean insertPlayer() throws SQLException {
 		String username = signup.username.getText();
 		String email = signup.email.getText();
 		String password = signup.password.getText();
+		Predicate<String> emailChecker = s -> (s.contains("@") && 
+									(s.endsWith(".com") || (s.endsWith(".mx") && (s.endsWith(".es")))));
+		if(username.equals("") || password.equals("") || email.equals("") || !emailChecker.test(email)) return false;
 		System.out.println(username + ", " + password + ", " + email);
 		mcDriver.insertPlayer(username, email, password);
-
+		
+		return true;
 	}
 
 	private void initSignupScene(Stage mainStage, Signup signup) {
@@ -462,7 +482,7 @@ public class Interface extends Application {
 		String turn = (ChessBoard.playerTurn)? "true" : "false";
 		savedFileStrings[lineCounter] = turn;
 		lineCounter++;
-		savedFileStrings[lineCounter] = String.valueOf(board.kingInCheck);
+		savedFileStrings[lineCounter] = String.valueOf(ChessBoard.kingInCheck);
 		lineCounter++;
 		String x, y, isThreatenedByWhite, isThreatenedByBlack,whiteThreads, blackThreads,piece, color;
 		for (int row = 0; row < 8; row++) {
@@ -523,6 +543,8 @@ public class Interface extends Application {
 		menuItemSave.setOnAction(e -> {
 			try {
 				saveGame();
+				onQuit();
+				
 			} catch (IOException | SQLException e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();

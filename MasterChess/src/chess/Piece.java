@@ -12,15 +12,12 @@ public abstract class Piece {
 	public Piece(boolean color){
 		this.color = color;
 
-		// for pawn double move and castling(?)
+		
 		hasMoved = false;
 
 		String location = "pieces/";
 		String filename = this.getColor() + "_" + this.getName() + ".png";
 		this.image = new Image(location + filename);
-		
-
-		// getPieceMoves(), usesSingleMove(), getName() defined in classes
 
 	}
 
@@ -32,12 +29,10 @@ public abstract class Piece {
 		this.hasMoved = shouldBeTrue;
 	}
 
-	// Returns image of chess piece
 	public Image getImage() {
 		return this.image;
 	}
 
-	// Get piece color as string
 	public String getColor() {
 		if (this.color == true)
 			return "white";
@@ -45,7 +40,6 @@ public abstract class Piece {
 			return "black";
 	}
 
-	// returns true if color is white
 	public boolean isWhite() {
 		return this.color;
 	}

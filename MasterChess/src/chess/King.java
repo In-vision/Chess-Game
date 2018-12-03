@@ -5,7 +5,6 @@ import java.util.Arrays;
 
 public class King extends Piece {
 	public King(boolean color) {
-		// this calls the constructor of Piece
 		super(color);
 	}
 

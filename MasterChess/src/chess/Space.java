@@ -6,7 +6,7 @@ import javafx.scene.image.ImageView;
 public class Space extends Button {
 	private int x;
 	private int y;
-	private Piece piece; // piece currently on space
+	private Piece piece; 
 	private boolean threatenedByWhite;
 	private boolean threatenedByBlack;
 	private int whiteThreads;

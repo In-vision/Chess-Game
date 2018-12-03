@@ -2,7 +2,6 @@ package chess;
 
 public class Queen extends Piece {
 	public Queen(boolean color) {
-		// this calls the constructor of Piece
 		super(color);
 	}
 
