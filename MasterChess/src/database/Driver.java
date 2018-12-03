@@ -21,7 +21,7 @@ public class Driver {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			// Get a connection
 			//                                                  "Isaac", "Pandita2357"
-			masterChessConn = DriverManager.getConnection(CONN, "Isaac", "Pandita2357");
+			masterChessConn = DriverManager.getConnection(CONN, "root", "Life28begins1776");
 			// Create Statement
 			masterChessStatement = masterChessConn.createStatement();
 		} catch (Exception e) {

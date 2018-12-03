@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
 
-import i18n.I18N;
 import database.Driver;
+import i18n.I18N;
 import interfaces.Configuraciones;
 import interfaces.GamesLog;
 import interfaces.MenuPrincipal;
@@ -24,6 +24,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -72,7 +73,7 @@ public class Interface extends Application {
 	private String userName;
 	private Locale mx = new Locale("es", "MX");
 	private Locale it = new Locale("it", "IT");
-	
+
 	@Override
 	public void init() throws Exception {
 		I18N.setSupportedLocales(Locale.ENGLISH, mx, it);
@@ -83,7 +84,7 @@ public class Interface extends Application {
 	public void start(Stage mainStage) throws IOException {
 
 		stage = mainStage;
-		stage.setTitle("Chess Game");
+		stage.titleProperty().bind(I18N.createStringBinding("title"));
 
 		stage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/app_icon.png")));
 
@@ -241,7 +242,6 @@ public class Interface extends Application {
 		mainStage.show();
 	}
 
-	
 	private void initBoardScene(Stage mainStage, boolean isNewGame, int calledFrom) throws SQLException {
 
 		if (isNewGame) {
@@ -357,27 +357,36 @@ public class Interface extends Application {
 		playerTurn.setPrefWidth(580);
 		playerTurn.maxWidth(580);
 		MenuBar menuBar = generateMenuBar();
+		
+		String spanish1 = I18N.createStringBinding("spanish").get();
+		String english1 = I18N.createStringBinding("english").get();
+		String italian1 = I18N.createStringBinding("italian").get();
+		ComboBox<String> lenguages = new ComboBox<String>();
+		lenguages.getItems().addAll(spanish1, english1, italian1);
+		lenguages.promptTextProperty().bind(I18N.createStringBinding("selectLang"));
 		HBox menuCombo = new HBox();
-		Button spanish = I18N.buttonForKey("spanish");
-		Button italian = I18N.buttonForKey("italian");
-		Button english = I18N.buttonForKey("english");
-
-		spanish.setOnAction(e -> {
-			I18N.setLocale(mx);
+//		Button spanish = I18N.buttonForKey("spanish");
+//		Button italian = I18N.buttonForKey("italian");
+//		Button english = I18N.buttonForKey("english");
+		
+		lenguages.setOnAction(e -> {
+			I18N.setLocale(setLocale(lenguages.getSelectionModel().getSelectedIndex()));
 		});
-		italian.setOnAction(e -> {
-			I18N.setLocale(it);
-			System.out.println(I18N.getMessage("player1"));
-		});
-		english.setOnAction(e -> {
-			I18N.setLocale(new Locale("en"));
-		});
-		menuCombo.getChildren().addAll(menuBar, english, spanish, italian);
+//		spanish.setOnAction(e -> {
+//			I18N.setLocale(mx);
+//		});
+//		italian.setOnAction(e -> {
+//			I18N.setLocale(it);
+//		});
+//		english.setOnAction(e -> {
+//			I18N.setLocale(new Locale("en"));
+//		});
+		menuCombo.getChildren().addAll(menuBar, lenguages);
 		menuCombo.getStyleClass().add("combob");
 		board.prefWidthProperty().bind(rootTmp.widthProperty());
 		board.prefHeightProperty().bind(rootTmp.heightProperty());
 		board.setLabelTurn(playerTurn);
-
+		
 		rootTmp.setCenter(nestedBP);
 		rootTmp.setBottom(playerTurn);
 		rootTmp.setTop(menuCombo);
@@ -392,6 +401,14 @@ public class Interface extends Application {
 		mainStage.titleProperty().bind(I18N.createStringBinding("title"));
 		mainStage.show();
 
+	}
+	
+	public Locale setLocale(int selectedIndex) {
+		switch(selectedIndex) {
+		case 0: return new Locale("es", "MX");
+		case 2: return new Locale("it", "IT");
+		default: return new Locale("en");
+		}
 	}
 
 	public void changePlayerStr() {
@@ -522,9 +539,13 @@ public class Interface extends Application {
 		MenuBar menuBar = new MenuBar();
 
 		Menu exitMenu = new Menu(I18N.getMessage("exit"));
+		exitMenu.textProperty().bind(I18N.createStringBinding("exit"));
 		MenuItem menuItemQuit = new MenuItem(I18N.getMessage("quit"));
+		menuItemQuit.textProperty().bind(I18N.createStringBinding("quit"));
 		MenuItem menuItemSignout = new MenuItem(I18N.getMessage("signOut"));
+		menuItemSignout.textProperty().bind(I18N.createStringBinding("signOut"));
 		MenuItem menuItemSave = new MenuItem(I18N.getMessage("save&Quit"));
+		menuItemSave.textProperty().bind(I18N.createStringBinding("save&Quit"));
 		menuItemQuit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
 		menuItemSignout.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN));
 		menuItemSave.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
@@ -541,9 +562,13 @@ public class Interface extends Application {
 		exitMenu.getItems().addAll(menuItemQuit, menuItemSignout, menuItemSave);
 
 		Menu gameMenu = new Menu(I18N.getMessage("game"));
+		gameMenu.textProperty().bind((I18N.createStringBinding("game")));
 		MenuItem menuItemDraw = new MenuItem(I18N.getMessage("draw"));
+		menuItemDraw.textProperty().bind((I18N.createStringBinding("draw")));
 		MenuItem menuItemResign = new MenuItem(I18N.getMessage("resign"));
+		menuItemResign.textProperty().bind((I18N.createStringBinding("resign")));
 		MenuItem menuItemReset = new MenuItem(I18N.getMessage("reset"));
+		menuItemReset.textProperty().bind((I18N.createStringBinding("reset")));
 		menuItemDraw.setAccelerator(new KeyCodeCombination(KeyCode.D, KeyCombination.CONTROL_DOWN));
 		menuItemDraw.setOnAction(e -> setDraw());
 		menuItemResign.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
@@ -560,7 +585,9 @@ public class Interface extends Application {
 		gameMenu.getItems().addAll(menuItemDraw, menuItemResign, menuItemReset);
 
 		Menu menuHelp = new Menu(I18N.getMessage("help"));
+		menuHelp.textProperty().bind((I18N.createStringBinding("help")));
 		MenuItem menuItemAbout = new MenuItem(I18N.getMessage("about"));
+		menuItemAbout.textProperty().bind((I18N.createStringBinding("about")));
 		menuItemAbout.setAccelerator(new KeyCodeCombination(KeyCode.F1));
 		menuItemAbout.setOnAction(e -> onDisplayAbout());
 		menuHelp.getItems().add(menuItemAbout);
