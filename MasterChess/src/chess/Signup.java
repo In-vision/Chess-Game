@@ -1,5 +1,6 @@
 package chess;
 
+import i18n.I18N;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -33,18 +34,18 @@ public class Signup extends VBox{
 		backButt.getStyleClass().add("buttonLogin");
 		backButt.setAlignment(Pos.CENTER);
 		
-		memberLogin = new Label("Sign up");
+		memberLogin = I18N.labelForKey("login");
 		
 		username = new TextField();
-		username.setPromptText("Username");
+		username.setPromptText(I18N.getMessage("username"));
 		
 		email = new TextField("Email");
 		email.setPromptText("Email");
 		
 		password = new PasswordField();
-		password.setPromptText("Password");
+		password.setPromptText(I18N.getMessage("password"));
 		
-		signup = new Button("Sign up");
+		signup = I18N.buttonForKey("signUp");
 		
 		username.setMaxWidth(250);
 		username.setPrefWidth(250);

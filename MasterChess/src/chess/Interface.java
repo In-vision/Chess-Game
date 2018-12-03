@@ -9,21 +9,22 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.Locale;
 import java.util.stream.Stream;
 
 import database.Driver;
+import i18n.I18N;
 import interfaces.Configuraciones;
 import interfaces.GamesLog;
 import interfaces.MenuPrincipal;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -41,6 +42,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 public class Interface extends Application {
+
 	public static void main(String[] args) {
 		// Automatic VM reset, thanks to Joseph Rachmuth.
 		try {
@@ -68,13 +70,22 @@ public class Interface extends Application {
 	private Label resultP1, resultP2;
 	private int langID = 1, voiceID = 1, themeID = 1;
 	private int gameID = 0;
-	
+
 	private String userName;
-	
+	private Locale mx = new Locale("es", "MX");
+	private Locale it = new Locale("it", "IT");
+
+	@Override
+	public void init() throws Exception {
+		I18N.setSupportedLocales(Locale.ENGLISH, mx, it);
+		I18N.setResourceBundlePath("res.messages");
+	}
+
 	@Override
 	public void start(Stage mainStage) throws IOException {
+
 		stage = mainStage;
-		stage.setTitle("Chess Game");
+		stage.titleProperty().bind(I18N.createStringBinding("title"));
 
 		stage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/app_icon.png")));
 
@@ -105,18 +116,14 @@ public class Interface extends Application {
 			}
 		});
 
-		
 		mainMenuConf();
 		loadGames();
 		config.voice1.getStyleClass().add("selected");
 		config.board1.getStyleClass().add("selected");
-		
-		confButtonsFunctionality();
-		
-		login.signup.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> initSignupScene(stage, signup));
-		
 
-		
+		confButtonsFunctionality();
+
+		login.signup.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> initSignupScene(stage, signup));
 		signup.signup.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
 			try {
 				boolean isValidPlayer = insertPlayer();
@@ -151,10 +158,10 @@ public class Interface extends Application {
 		boolean areValidCredentials = true;
 		if (requestCode == 1) {
 			ResultSet rs = null;
-			areValidCredentials = false;
+			areValidCredentials = true;
 			String userNorMail = login.username.getText();
 			String lPassword = login.password.getText();
-			
+
 			System.out.println("Credentials: ");
 			System.out.println("User: " + userNorMail);
 			System.out.println("Password: " + lPassword);
@@ -182,15 +189,12 @@ public class Interface extends Application {
 			}
 
 		}
-		
-		System.out.println("init mainMenu");
-		System.out.println(areValidCredentials);
+
 		BorderPane root = new BorderPane();
 		root.setCenter(mainMenu);
 		Scene mainMenuScene = new Scene(root);
 		mainMenuScene.getStylesheets().add("/interfaces/menuPrincipalv1-2.css");
-		System.out.println("show");
-		
+
 		if (areValidCredentials && requestCode == 1) {
 			mainStage.setScene(mainMenuScene);
 			mainStage.show();
@@ -204,21 +208,17 @@ public class Interface extends Application {
 		}
 
 	}
-	
+
 	private void initGameLogs(Stage mainStage, GamesLog gamelogs) {
-		System.out.println("init GameLogs Screen");
 		BorderPane root = new BorderPane();
 		root.setCenter(gamelogs);
 		Scene mainMenuScene = new Scene(root);
 		mainMenuScene.getStylesheets().add("/interfaces/gameslog.css");
 		mainStage.setScene(mainMenuScene);
-		System.out.println("show");
-		
 		mainStage.show();
 	}
 
 	private void initConfig(Stage mainStage, Configuraciones conf) {
-		System.out.println("init menu of configuration");
 		BorderPane root = new BorderPane();
 		root.setCenter(conf);
 		Scene confMenu = new Scene(root);
@@ -228,7 +228,6 @@ public class Interface extends Application {
 	}
 
 	private void initLogin(Stage mainStage, Login login) {
-		System.out.println("init login");
 		BorderPane root = new BorderPane();
 		root.setCenter(login);
 		Scene loginScene = new Scene(root);
@@ -261,19 +260,17 @@ public class Interface extends Application {
 	}
 
 	private void initBoardScene(Stage mainStage, boolean isNewGame, int calledFrom) throws SQLException {
-		System.out.println("Init board scene");
-		if(isNewGame) {
+
+		if (isNewGame) {
 			board = new ChessBoard(playerIsWhite, this.langID, this.voiceID, this.themeID, isNewGame);
-		}
-		else {
+		} else {
 			board = new ChessBoard(playerIsWhite, this.langID, this.voiceID, this.themeID, isNewGame);
-			
+
 			String path = userName + calledFrom + ".txt";
 			Path myGame = Paths.get(path);
-			if(!Files.exists(myGame)) {
+			if (!Files.exists(myGame)) {
 				board = new ChessBoard(playerIsWhite, this.langID, this.voiceID, this.themeID, true);
-			}
-			else {
+			} else {
 				List<String> lines;
 				try {
 					lines = Files.readAllLines(myGame);
@@ -282,7 +279,7 @@ public class Interface extends Application {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			}
 		}
 
@@ -351,9 +348,9 @@ public class Interface extends Application {
 		nestedBP.setBottom(letters);
 
 		VBox players = new VBox();
-		Label p1, p2, vs;
-		p1 = new Label("Player 1");
-		p2 = new Label("Player 2");
+		Label p1 = I18N.labelForKey("player1");
+		Label p2 = I18N.labelForKey("player2");
+		Label vs;
 		vs = new Label("VS");
 		resultP1 = new Label("-");
 		resultP2 = new Label("-");
@@ -377,18 +374,36 @@ public class Interface extends Application {
 		playerTurn.setPrefWidth(580);
 		playerTurn.maxWidth(580);
 		MenuBar menuBar = generateMenuBar();
+		
+		String spanish1 = I18N.createStringBinding("spanish").get();
+		String english1 = I18N.createStringBinding("english").get();
+		String italian1 = I18N.createStringBinding("italian").get();
+		ComboBox<String> lenguages = new ComboBox<String>();
+		lenguages.getItems().addAll(spanish1, english1, italian1);
+		lenguages.promptTextProperty().bind(I18N.createStringBinding("selectLang"));
 		HBox menuCombo = new HBox();
-		ObservableList<String> options = FXCollections.observableArrayList("Spanish", "English", "French");
-
-		ComboBox<String> languages = new ComboBox<>(options);
-		languages.setPromptText("Select a language");
-
-		menuCombo.getChildren().addAll(menuBar, languages);
+//		Button spanish = I18N.buttonForKey("spanish");
+//		Button italian = I18N.buttonForKey("italian");
+//		Button english = I18N.buttonForKey("english");
+		
+		lenguages.setOnAction(e -> {
+			I18N.setLocale(setLocale(lenguages.getSelectionModel().getSelectedIndex()));
+		});
+//		spanish.setOnAction(e -> {
+//			I18N.setLocale(mx);
+//		});
+//		italian.setOnAction(e -> {
+//			I18N.setLocale(it);
+//		});
+//		english.setOnAction(e -> {
+//			I18N.setLocale(new Locale("en"));
+//		});
+		menuCombo.getChildren().addAll(menuBar, lenguages);
 		menuCombo.getStyleClass().add("combob");
 		board.prefWidthProperty().bind(rootTmp.widthProperty());
 		board.prefHeightProperty().bind(rootTmp.heightProperty());
 		board.setLabelTurn(playerTurn);
-
+		
 		rootTmp.setCenter(nestedBP);
 		rootTmp.setBottom(playerTurn);
 		rootTmp.setTop(menuCombo);
@@ -400,8 +415,17 @@ public class Interface extends Application {
 		Scene boardScene = new Scene(rootTmp, 580, 480);
 		boardScene.getStylesheets().add("/res/stylesheet.css");
 		mainStage.setScene(boardScene);
+		mainStage.titleProperty().bind(I18N.createStringBinding("title"));
 		mainStage.show();
 
+	}
+	
+	public Locale setLocale(int selectedIndex) {
+		switch(selectedIndex) {
+		case 0: return new Locale("es", "MX");
+		case 2: return new Locale("it", "IT");
+		default: return new Locale("en");
+		}
 	}
 
 	public void changePlayerStr() {
@@ -430,7 +454,7 @@ public class Interface extends Application {
 		infoAlert.showAndWait();
 	}
 
-// Display 'about' menu
+	// Display 'about' menu
 	public void onDisplayAbout() {
 		Alert infoAlert = new Alert(AlertType.INFORMATION);
 		infoAlert.setTitle("About this program");
@@ -443,7 +467,6 @@ public class Interface extends Application {
 		infoAlert.setContentText("Programmed by Isaac Cabrera, Ian Diaz and Luis Beltrán\n");
 		infoAlert.showAndWait();
 	}
-	
 
 	private void setEndGame() {
 		if (this.cantPlayAnymore)
@@ -462,29 +485,29 @@ public class Interface extends Application {
 		resultP2.setText("1/2");
 		this.cantPlayAnymore = true;
 	}
-	
+
 	public void onDisplayFullDatabase() {
 		Alert infoAlert = new Alert(AlertType.INFORMATION);
-		infoAlert.setTitle("Database FULL");
+		infoAlert.setTitle(I18N.getMessage("databaseFull"));
 		infoAlert.setHeaderText(null);
 
 		// Set window icon
 		Stage alertStage = (Stage) infoAlert.getDialogPane().getScene().getWindow();
 		alertStage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/about.png")));
 
-		infoAlert.setContentText("You've used your three save slots. Please feel free to pay for more!\n");
+		infoAlert.setContentText(I18N.getMessage("contextText"));
 		infoAlert.showAndWait();
 	}
-	
+
 	private void saveGame() throws IOException, SQLException {
 		String[] savedFileStrings = new String[66];
 		int lineCounter = 0, count = 0;
-		String turn = (ChessBoard.playerTurn)? "true" : "false";
+		String turn = (ChessBoard.playerTurn) ? "true" : "false";
 		savedFileStrings[lineCounter] = turn;
 		lineCounter++;
 		savedFileStrings[lineCounter] = String.valueOf(ChessBoard.kingInCheck);
 		lineCounter++;
-		String x, y, isThreatenedByWhite, isThreatenedByBlack,whiteThreads, blackThreads,piece, color;
+		String x, y, isThreatenedByWhite, isThreatenedByBlack, whiteThreads, blackThreads, piece, color;
 		for (int row = 0; row < 8; row++) {
 			for (int column = 0; column < 8; column++) {
 				Space temp = ChessBoard.spaces[row][column];
@@ -494,21 +517,22 @@ public class Interface extends Application {
 				isThreatenedByBlack = String.valueOf(temp.isThreatenedByBlack());
 				whiteThreads = String.valueOf(temp.getWhiteThreads());
 				blackThreads = String.valueOf(temp.getBlackThreads());
-				piece = (temp.getPiece() == null)? null : temp.getPiece().getName();
-				color = (piece == null)? null: temp.getPieceColor();
-				if(piece != null) count++;
-				String concat = x + "," + y + "," + isThreatenedByWhite + "," +
-						isThreatenedByBlack+","+whiteThreads+","+blackThreads+","+piece+","+color;
+				piece = (temp.getPiece() == null) ? null : temp.getPiece().getName();
+				color = (piece == null) ? null : temp.getPieceColor();
+				if (piece != null)
+					count++;
+				String concat = x + "," + y + "," + isThreatenedByWhite + "," + isThreatenedByBlack + "," + whiteThreads
+						+ "," + blackThreads + "," + piece + "," + color;
 				savedFileStrings[lineCounter] = concat;
 				lineCounter++;
-//				System.out.println(concat);
-				
+				System.out.println(concat);
+
 			}
 		}
 		System.out.println("hola : " + userName);
 		int userID = mcDriver.selectUserID(userName);
 		int noGames = mcDriver.selectGamesFromUser(userID);
-		if(noGames == 3) {
+		if (noGames == 3) {
 			onDisplayFullDatabase();
 			return;
 		}
@@ -518,23 +542,27 @@ public class Interface extends Application {
 		System.out.println(fileName);
 		Path myPath = Paths.get(fileName);
 		Files.write(myPath, Arrays.asList(savedFileStrings));
-		
+
 		mcDriver.insertGamePath(gameID, userID, fileName);
-//		System.out.println("Reading file...");
-//		List<String> taqlo = Files.readAllLines(myPath);
-//		for(String aa: taqlo) {
-//			System.out.println(aa);
-//		}
+		System.out.println("Reading file...");
+		List<String> taqlo = Files.readAllLines(myPath);
+		for (String aa : taqlo) {
+			System.out.println(aa);
+		}
 	}
-	
+
 	// Generate main menu bar
 	private MenuBar generateMenuBar() {
 		MenuBar menuBar = new MenuBar();
 
-		Menu exitMenu = new Menu("Exit");
-		MenuItem menuItemQuit = new MenuItem("Quit");
-		MenuItem menuItemSignout = new MenuItem("Sign out");
-		MenuItem menuItemSave = new MenuItem("Save and Quit");
+		Menu exitMenu = new Menu(I18N.getMessage("exit"));
+		exitMenu.textProperty().bind(I18N.createStringBinding("exit"));
+		MenuItem menuItemQuit = new MenuItem(I18N.getMessage("quit"));
+		menuItemQuit.textProperty().bind(I18N.createStringBinding("quit"));
+		MenuItem menuItemSignout = new MenuItem(I18N.getMessage("signOut"));
+		menuItemSignout.textProperty().bind(I18N.createStringBinding("signOut"));
+		MenuItem menuItemSave = new MenuItem(I18N.getMessage("save&Quit"));
+		menuItemSave.textProperty().bind(I18N.createStringBinding("save&Quit"));
 		menuItemQuit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
 		menuItemSignout.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN));
 		menuItemSave.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
@@ -552,10 +580,14 @@ public class Interface extends Application {
 		});
 		exitMenu.getItems().addAll(menuItemQuit, menuItemSignout, menuItemSave);
 
-		Menu gameMenu = new Menu("Game");
-		MenuItem menuItemDraw = new MenuItem("Draw");
-		MenuItem menuItemResign = new MenuItem("Resign");
-		MenuItem menuItemReset = new MenuItem("Reset");
+		Menu gameMenu = new Menu(I18N.getMessage("game"));
+		gameMenu.textProperty().bind((I18N.createStringBinding("game")));
+		MenuItem menuItemDraw = new MenuItem(I18N.getMessage("draw"));
+		menuItemDraw.textProperty().bind((I18N.createStringBinding("draw")));
+		MenuItem menuItemResign = new MenuItem(I18N.getMessage("resign"));
+		menuItemResign.textProperty().bind((I18N.createStringBinding("resign")));
+		MenuItem menuItemReset = new MenuItem(I18N.getMessage("reset"));
+		menuItemReset.textProperty().bind((I18N.createStringBinding("reset")));
 		menuItemDraw.setAccelerator(new KeyCodeCombination(KeyCode.D, KeyCombination.CONTROL_DOWN));
 		menuItemDraw.setOnAction(e -> setDraw());
 		menuItemResign.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
@@ -571,8 +603,10 @@ public class Interface extends Application {
 		});
 		gameMenu.getItems().addAll(menuItemDraw, menuItemResign, menuItemReset);
 
-		Menu menuHelp = new Menu("Help");
-		MenuItem menuItemAbout = new MenuItem("About");
+		Menu menuHelp = new Menu(I18N.getMessage("help"));
+		menuHelp.textProperty().bind((I18N.createStringBinding("help")));
+		MenuItem menuItemAbout = new MenuItem(I18N.getMessage("about"));
+		menuItemAbout.textProperty().bind((I18N.createStringBinding("about")));
 		menuItemAbout.setAccelerator(new KeyCodeCombination(KeyCode.F1));
 		menuItemAbout.setOnAction(e -> onDisplayAbout());
 		menuHelp.getItems().add(menuItemAbout);
@@ -582,9 +616,9 @@ public class Interface extends Application {
 	}
 
 	public void confButtonsFunctionality() {
-		//Botones de lenguaje
-		
-		//Botones de voces
+		// Botones de lenguaje
+
+		// Botones de voces
 		config.voice1.setOnAction(e -> {
 			Stream.of(config.voice2, config.voice3).forEach(button2 -> button2.getStyleClass().remove("selected"));
 			config.voice1.getStyleClass().add("selected");
@@ -600,8 +634,8 @@ public class Interface extends Application {
 			config.voice3.getStyleClass().add("selected");
 			this.voiceID = 3;
 		});
-		
-		//Botones de colores de tablero
+
+		// Botones de colores de tablero
 		config.board1.setOnAction(e -> {
 			Stream.of(config.board2, config.board3).forEach(button2 -> button2.getStyleClass().remove("selected"));
 			config.board1.getStyleClass().add("selected");
@@ -630,7 +664,7 @@ public class Interface extends Application {
 		});
 
 	}
-	
+
 	private void loadGames() {
 		this.gameLogs.load1.setOnAction(e -> {
 			try {
@@ -642,17 +676,17 @@ public class Interface extends Application {
 		});
 		this.gameLogs.load2.setOnAction(e -> {
 			try {
-				
+
 				initBoardScene(stage, false, 2);
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		});
-		
+
 		this.gameLogs.load3.setOnAction(e -> {
 			try {
-				initBoardScene(stage, false ,3);
+				initBoardScene(stage, false, 3);
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -667,16 +701,16 @@ public class Interface extends Application {
 			}
 		});
 	}
-	
+
 	private void mainMenuConf() {
 		mainMenu.conf.setOnAction(e -> {
 			initConfig(stage, config);
 		});
-		
+
 		mainMenu.singlePlayer.setOnAction(e -> {
 			initGameLogs(stage, gameLogs);
 		});
-		
+
 		mainMenu.quit.setOnAction(e -> {
 			stage.close();
 		});

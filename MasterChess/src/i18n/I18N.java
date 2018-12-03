@@ -29,7 +29,7 @@ public final class I18N {
 	/** The current selected Locale. */
 	private static ObjectProperty<Locale> locale;
 
-	private static void initializeI18n() {
+	private static void initializeI18N() {
 		locale = new SimpleObjectProperty<>(getDefaultLocale());
 		locale.addListener((ov, oldValue, newValue) -> Locale.setDefault(newValue));
 	}
@@ -53,7 +53,7 @@ public final class I18N {
 	 */
 	public static void setSupportedLocales(Locale... locales) {
 		supportedLocales = Arrays.asList(locales);
-		initializeI18n();
+		initializeI18N();
 	}
 
 	/**
@@ -71,7 +71,6 @@ public final class I18N {
 
 	public static void setLocale(Locale locale) {
 		localeProperty().set(locale);
-//		Locale.setDefault(locale);
 	}
 
 	public static ObjectProperty<Locale> localeProperty() {

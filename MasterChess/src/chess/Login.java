@@ -1,5 +1,6 @@
 package chess;
 
+import i18n.I18N;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -30,16 +31,16 @@ public class Login extends VBox{
 		hb = new HBox();
 		hb.setPadding(new Insets(0, 12, 0, 12));
 		
-		memberLogin = new Label("Login to your account");
+		memberLogin = I18N.labelForKey("loginAcc");
 		
 		username = new TextField();
-		username.setPromptText("Username");
+		username.setPromptText(I18N.getMessage("username"));
 		
 		password = new PasswordField();
-		password.setPromptText("Password");
+		password.setPromptText(I18N.getMessage("password"));
 		
-		login = new Button("Log in");
-		signup = new Button("Sign up");
+		login = I18N.buttonForKey("login");
+		signup = I18N.buttonForKey("signUp");
 		
 		username.setMaxWidth(250);
 		username.setPrefWidth(250);
